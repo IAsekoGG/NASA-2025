@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Asteroid Impact Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: system-ui; }
+        #map { position: absolute; top: 0; bottom: 0; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <!-- Панель параметрів -->
+    <div id="controls" class="absolute top-4 left-4 bg-white rounded-lg shadow-2xl p-6 w-80 z-10">
+        <h1 class="text-2xl font-bold mb-4">☄️ Врони метеорит</h1>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-semibold mb-2">Розмір (м)</label>
+            <input type="range" id="size" min="10" max="1000" value="100" class="w-full">
+            <span id="sizeValue" class="text-sm text-gray-600">100 м</span>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-semibold mb-2">Швидкість (км/с)</label>
+            <input type="range" id="speed" min="5" max="70" value="20" class="w-full">
+            <span id="speedValue" class="text-sm text-gray-600">20 км/с</span>
+        </div>
+        
+        <div class="mb-4">
+            <label class="block text-sm font-semibold mb-2">Кут падіння (°)</label>
+            <input type="range" id="angle" min="10" max="90" value="45" class="w-full">
+            <span id="angleValue" class="text-sm text-gray-600">45°</span>
+        </div>
+        
+        <div id="coords" class="text-xs text-gray-500 mb-4">Натисни на мапу</div>
+        
+        <button id="impactBtn" disabled class="w-full bg-red-600 text-white py-3 rounded-lg font-bold hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed">
+            ВРОНИ МЕТЕОРИТ 💥
+        </button>
+    </div>
+    
+    <!-- Панель результатів -->
+    <div id="results" class="absolute top-4 right-4 bg-white rounded-lg shadow-2xl p-6 w-80 z-10 hidden">
+        <h2 class="text-xl font-bold mb-4">📊 Наслідки удару</h2>
+        <div id="resultsContent"></div>
+    </div>
+
+    <script>
+        // Ініціалізація мапи
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://demotiles.maplibre.org/style.json',
+            center: [30.5, 50.45],
+            zoom: 4
+        });
+
+        let selectedCoords = null;
+        let marker = null;
+
+        // Оновлення значень слайдерів
+        document.getElementById('size').oninput = (e) => {
+            document.getElementById('sizeValue').textContent = e.target.value + ' м';
+        };
+        document.getElementById('speed').oninput = (e) => {
+            document.getElementById('speedValue').textContent = e.target.value + ' км/с';
+        };
+        document.getElementById('angle').oninput = (e) => {
+            document.getElementById('angleValue').textContent = e.target.value + '°';
+        };
+
+        // Вибір точки на мапі
+        map.on('click', (e) => {
+            selectedCoords = e.lngLat;
+            
+            if (marker) marker.remove();
+            marker = new maplibregl.Marker({color: '#FF0000'})
+                .setLngLat([e.lngLat.lng, e.lngLat.lat])
+                .addTo(map);
+            
+            document.getElementById('coords').textContent = 
+                `📍 ${e.lngLat.lat.toFixed(2)}°, ${e.lngLat.lng.toFixed(2)}°`;
+            document.getElementById('impactBtn').disabled = false;
+        });
+
+        // Симуляція удару
+        document.getElementById('impactBtn').onclick = async () => {
+            if (!selectedCoords) return;
+            
+            const size = parseFloat(document.getElementById('size').value);
+            const speed = parseFloat(document.getElementById('speed').value);
+            const angle = parseFloat(document.getElementById('angle').value);
+            
+            try {
+                const res = await fetch('http://localhost:8000/impact', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        lat: selectedCoords.lat,
+                        lon: selectedCoords.lng,
+                        size, speed, angle
+                    })
+                });
+                
+                const data = await res.json();
+                
+                // Видалення старих шарів
+                ['crater', 'airburst', 'thermal', 'seismic', 'tsunami'].forEach(id => {
+                    if (map.getLayer(id)) map.removeLayer(id);
+                    if (map.getSource(id)) map.removeSource(id);
+                });
+                
+                // Малювання нових ефектів
+                data.layers.forEach(layer => {
+                    const circle = createCircle(selectedCoords, layer.radius_km);
+                    
+                    map.addSource(layer.type, {
+                        type: 'geojson',
+                        data: circle
+                    });
+                    
+                    map.addLayer({
+                        id: layer.type,
+                        type: 'fill',
+                        source: layer.type,
+                        paint: {
+                            'fill-color': layer.color,
+                            'fill-opacity': 0.3,
+                            'fill-outline-color': layer.color
+                        }
+                    });
+                });
+                
+                // Показати результати
+                const labels = {
+                    crater: '🕳️ Кратер',
+                    airburst: '💥 Ударна хвиля',
+                    thermal: '🔥 Теплове випромінювання',
+                    seismic: '🌍 Землетрус',
+                    tsunami: '🌊 Цунамі'
+                };
+                
+                let html = `
+                    <div class="mb-4 p-3 bg-red-50 rounded">
+                        <div class="font-bold text-red-800">⚡ Енергія: ${data.energy_Mt} Мт</div>
+                        <div class="text-sm text-gray-600">MMI: ${data.mmi}/12</div>
+                    </div>
+                `;
+                
+                data.layers.forEach(layer => {
+                    html += `
+                        <div class="mb-2 p-2 rounded" style="background-color: ${layer.color}22">
+                            <div class="font-semibold">${labels[layer.type]}</div>
+                            <div class="text-sm">Радіус: ${layer.radius_km.toFixed(1)} км</div>
+                        </div>
+                    `;
+                });
+                
+                html += `<div class="mt-4 p-3 bg-blue-50 rounded text-sm">💡 ${data.fun_fact}</div>`;
+                
+                document.getElementById('resultsContent').innerHTML = html;
+                document.getElementById('results').classList.remove('hidden');
+                
+            } catch (err) {
+                alert('Помилка підключення до бекенду. Переконайся, що FastAPI запущений на порті 8000');
+            }
+        };
+
+        // Створення кола (GeoJSON)
+        function createCircle(center, radiusKm, points = 64) {
+            const coords = [];
+            const distanceX = radiusKm / (111.32 * Math.cos(center.lat * Math.PI / 180));
+            const distanceY = radiusKm / 110.574;
+
+            for (let i = 0; i < points; i++) {
+                const theta = (i / points) * (2 * Math.PI);
+                const x = distanceX * Math.cos(theta);
+                const y = distanceY * Math.sin(theta);
+                coords.push([center.lng + x, center.lat + y]);
+            }
+            coords.push(coords[0]);
+
+            return {
+                type: 'Feature',
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: [coords]
+                }
+            };
+        }
+    </script>
+</body>
+</html>
