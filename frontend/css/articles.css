@@ -82,3 +82,26 @@
     font-size: 14px;
     color: #6B7280;
 }
+
+/* Однакова висота зображень у ряду */
+.article .image-row.equal-heights img,
+.article .image-row.equal-heights figure > img {
+    width: 100%;
+    height: var(--h, 240px);
+    object-fit: cover; /* заповнює, акуратно підрізає без спотворень */
+    display: block;
+}
+
+/* Варіант без обрізання для більш квадратних картинок */
+.article .image-row.equal-heights img.contain,
+.article .image-row.equal-heights figure.contain > img {
+    width: auto;
+    max-width: 100%;
+    height: var(--h, 240px);
+    object-fit: contain; /* не обрізає, може бути вже за шириною */
+}
+
+.article .image-row.equal-heights figure.contain {
+    width: auto;
+    justify-self: start; /* дозволяє елементу бути вужчим за колонку */
+}
