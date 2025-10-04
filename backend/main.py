@@ -89,17 +89,49 @@ def calculate_impact(req: ImpactRequest):
         )
         
     elif req.scenario == "water":
-        result["tsunami"] = calculate_tsunami(energy["energy_mt"])
-        result["thermal"] = calculate_thermal(energy["energy_mt"])
-        result["airblast"] = calculate_airblast(energy["energy_mt"] * 0.5)
-        
-        # Для води НЕ рахуємо casualties та economic_damage - нелогічно
-        
-        result["layers"] = (
-            [{"type": "tsunami_" + str(i), "radius_km": z["distance_km"], "color": "#0077BE"} 
-             for i, z in enumerate(result["tsunami"]["zones"][:3])]
-        )
-        
+        # 1) Енергія (якщо не порахована вище)
+        if "energy" not in result:
+            result["energy"] = calculate_energy(req.size, req.speed, req.material)
+        energy = result["energy"]
+
+        # 2) Ефекти
+        result["tsunami"]  = calculate_tsunami(energy["energy_mt"])
+        result["thermal"]  = calculate_thermal(energy["energy_mt"])
+        result["airblast"] = calculate_airblast(energy["energy_mt"] * 0.5)  # над водою слабше
+
+        # 3) Для water не рахуємо ці поля
+        result.pop("casualties", None)
+        result.pop("economic_damage", None)
+
+        # 4) Шари для мапи:
+        #    Тепер цунамі-зони мають radius_km і type (tsunami_extreme/major/...)
+        tsunami_layers = [
+            {
+                "type": z.get("type", f"tsunami_{i}"),
+                "radius_km": float(z["radius_km"]),
+                "color": z.get("color", "#0077BE"),
+            }
+            for i, z in enumerate(result["tsunami"]["zones"])
+            if "radius_km" in z
+        ]
+
+        #    Додаємо бласт-зони (залишаємо як є)
+        airblast_layers = [
+            {
+                "type": z["type"],
+                "radius_km": float(z["radius_km"]),
+                "color": z["color"],
+            }
+            for z in result["airblast"]
+            if "radius_km" in z
+        ]
+
+        #    Якщо хочеш обмежити кількість кілець цунамі – розкоментуй наступний рядок:
+        # tsunami_layers = tsunami_layers[:4]  # extreme..minor
+
+        result["layers"] = tsunami_layers + airblast_layers
+
+            
     elif req.scenario == "airburst":
         result["airburst_altitude_km"] = round(15 + random.uniform(-5, 10), 1)
         result["airblast"] = calculate_airblast(energy["energy_mt"])

@@ -1,3 +1,31 @@
+:root {
+  /* Кратер */
+  --color-crater-fill: #000000;
+  --color-crater-stroke: #000000;
+
+  /* Цунамі (шкала синіх) */
+  --color-tsunami-extreme: #0033a0;
+  --color-tsunami-major:   #1f5fbf;
+  --color-tsunami-moderate:#3f8de5;
+  --color-tsunami-minor:   #7ec8ff;
+  --color-tsunami-info:    #bfe6ff;
+
+  /* Повітряна хвиля */
+  --color-blast-total:    #8B0000;
+  --color-blast-heavy:    #DC143C;
+  --color-blast-moderate: #FF4500;
+  --color-blast-light:    #FFA500;
+  --color-blast-glass:    #FFD700;
+
+  /* Опції стилю */
+  --fill-opacity-crater: 0.50;
+  --fill-opacity-zones:  0.25;
+  --stroke-opacity:      0.80;
+  --stroke-width-crater: 3;
+  --stroke-width-zones:  2;
+}
+
+
 #map {
     position: absolute;
     top: 0;
