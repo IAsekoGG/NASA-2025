@@ -4,49 +4,143 @@ from typing import Dict, List
 from constants import MATERIALS
 
 
+# Очікується, що MATERIALS уже є в твоєму модулі
+# MATERIALS = {
+#     "stone": {"density": 3000, "strength": 1.0, "name": "Кам'яний"},
+#     "iron":  {"density": 7800, "strength": 2.5, "name": "Залізний"},
+#     "ice":   {"density":  917, "strength": 0.3, "name": "Льодяний"}
+# }
+
+TNT_J_PER_MT = 4.184e15
+G_DEFAULT = 9.81
+RHO_TARGET_DEFAULT = 2750
+
+# Калібрування під твій референт: 49 м, 20 км/с, 80° → ~0.9 км
+CRATER_CAL_K = 0.95  # можеш рухати в діапазоні ~0.90..1.05 під свій набір референсів
+
+def _angle_eff(angle_deg: float) -> float:
+    """Кутова ефективність для масштабування (не дозволяємо занадто малих значень)."""
+    s = math.sin(math.radians(angle_deg))
+    return max(0.35, s)  # клемп, щоб дуже пологі не занулювали все
+
 def calculate_energy(size: float, speed: float, material: str) -> Dict:
-    """Розрахунок кінетичної енергії"""
+    """
+    Кінетична енергія. size — діаметр м, speed — км/с.
+    Повертає старий формат, який у тебе вже споживається фронтом.
+    """
     mat = MATERIALS[material]
     volume = (4/3) * math.pi * (size/2)**3
     mass = volume * mat["density"]
-    velocity = speed * 1000
-    
-    energy_j = 0.5 * mass * velocity**2
-    energy_mt = energy_j / (4.184 * 10**15) * mat["strength"]
-    
-    # Еквіваленти
-    hiroshima = energy_mt / 0.015  # 15 кілотонн
+    v = speed * 1000.0
+
+    energy_j = 0.5 * mass * v**2
+    energy_mt = energy_j / TNT_J_PER_MT
+
+    hiroshima = energy_mt / 0.015
     tnt_kg = energy_mt * 1e9
-    
+
+    print(f"\n[ENERGY] d={size}м, v={speed}км/с, material={material}")
+    print(f"[ENERGY] mass={mass:.3e}кг, volume={volume:.1f}м³")
+    print(f"[ENERGY] E={energy_j:.3e}Дж = {energy_mt:.3f}Мт")
+
     return {
         "energy_j": energy_j,
         "energy_mt": round(energy_mt, 3),
         "mass_kg": mass,
         "hiroshima_eq": round(hiroshima, 1),
-        "tnt_kg": round(tnt_kg, 0)
+        "tnt_kg": round(tnt_kg, 0),
     }
 
+def calculate_crater(
+    size: float,
+    speed: float,
+    angle: float,
+    rho_i: float = 3000,
+    rho_t: float = RHO_TARGET_DEFAULT,
+    g: float = G_DEFAULT,
+) -> Dict:
+    """
+    Розрахунок ФІНАЛЬНОГО простого кратера (rim-to-rim).
+    ПОВЕРТАЄ СТАРІ КЛЮЧІ:
+      - diameter_km (float)
+      - depth_km (float)
+      - ejecta_mass_kg (float)
+      - rim_height_m (float)
+    Плюс допоміжні: shape, width_km, length_km, energy_mt.
+    """
+    print("\n" + "="*64)
+    print("РОЗРАХУНОК КРАТЕРА (сумісний формат)")
+    print(f"Input: size={size}м, speed={speed}км/с, angle={angle}°; rho_i={rho_i}, rho_t={rho_t}, g={g}")
 
-def calculate_crater(size: float, speed: float, angle: float, energy_mt: float) -> Dict:
-    """Розрахунок кратера"""
-    # Формула Коллінза-Мелоша для кратерів
-    energy_factor = energy_mt ** (1/3)
-    
-    # Діаметр залежить від кута падіння
-    angle_factor = math.sin(math.radians(angle))
-    crater_diameter = 0.117 * (size ** 0.78) * (speed ** 0.44) * (angle_factor ** 0.33)
-    crater_depth = crater_diameter * 0.3
-    
-    # Викинута порода
-    ejecta_volume = math.pi * (crater_diameter/2)**2 * crater_depth
-    ejecta_mass = ejecta_volume * 2500  # щільність породи
-    
-    return {
-        "diameter_km": round(crater_diameter / 1000, 3),
-        "depth_km": round(crater_depth / 1000, 3),
+    v = speed * 1000.0
+    theta = math.radians(angle)
+    sin_theta = math.sin(theta)
+
+    # Маса та енергія
+    volume = (4/3) * math.pi * (size/2)**3
+    mass = rho_i * volume
+    E = 0.5 * mass * v**2
+    E_mt = E / TNT_J_PER_MT
+
+    # π-скейлінг (Collins–Melosh) для транзієнтного діаметра (м)
+    # ВАЖЛИВО: слабка залежність від кута: (sinθ)^(1/3)
+    D_tr = 1.161 * ((rho_i/rho_t) ** (1/3)) * (size ** 0.783) \
+           * (v ** 0.44) * (g ** -0.217) * (sin_theta ** (1/3))
+
+    # Фінальний діаметр (простий кратер)
+    D_final = 1.25 * D_tr
+
+    # Кутова корекція (без подвійного множення sinθ по енергії!)
+    eff = _angle_eff(angle)  # 0.35..1.0
+    if angle < 30:
+        D_final *= (0.85 * eff + 0.10)  # помірно зменшуємо при дуже пологих
+    else:
+        D_final *= (0.95 + 0.05 * eff)  # для крутих майже без змін
+
+    # Глобальна калібровка
+    D_final *= CRATER_CAL_K
+
+    # Форма/еліпс для дуже пологих
+    shape = "circular"
+    width_m = D_final
+    length_m = D_final
+    if angle < 30:
+        elong = min(1.0/max(1e-6, sin_theta), 3.0)  # cap ×3
+        shape = "elliptical"
+        width_m = D_final
+        length_m = D_final * elong
+
+    # Глибина/вал
+    if angle < 30:
+        depth_m = 0.2 * D_final * sin_theta   # мілкіше при пологих
+    else:
+        depth_m = 0.2 * D_final * (0.9 + 0.1 * eff)
+    rim_h_m = 0.04 * D_final
+
+    # Маса викидів (груба оцінка)
+    crater_area = math.pi * (D_final/2)**2
+    ejecta_volume = crater_area * depth_m
+    ejecta_mass = ejecta_volume * rho_t
+
+    print(f"[CRATER] D_tr={D_tr:.1f}м → D_final={D_final:.1f}м ({D_final/1000:.3f}км), shape={shape}")
+    if shape == "elliptical":
+        print(f"[CRATER] width={width_m:.1f}м, length={length_m:.1f}м, elong≈{length_m/width_m:.2f}")
+    print(f"[CRATER] depth≈{depth_m:.1f}м ({depth_m/1000:.3f}км), rim≈{rim_h_m:.1f}м")
+    print(f"[CRATER] ejecta_mass≈{ejecta_mass:.3e}кг; energy≈{E_mt:.3f}Мт")
+
+    # КЛЮЧОВЕ: diameter_km ІСНУЄ ЗАВЖДИ (беремо «ширину» як базовий діаметр)
+    result = {
+        "diameter_km": round(width_m / 1000.0, 3),
+        "depth_km": round(depth_m / 1000.0, 3),
         "ejecta_mass_kg": round(ejecta_mass, 0),
-        "rim_height_m": round(crater_depth * 0.04, 1)
+        "rim_height_m": round(rim_h_m, 1),
+        # додаткові:
+        "shape": shape,
+        "width_km": round(width_m / 1000.0, 3),
+        "length_km": round(length_m / 1000.0, 3),
+        "energy_mt": round(E_mt, 3),
     }
+    return result
 
 
 def calculate_airblast(energy_mt: float) -> List[Dict]:

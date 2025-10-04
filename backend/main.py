@@ -41,6 +41,9 @@ def calculate_impact(req: ImpactRequest):
     # Інформація про населення
     pop_info = estimate_population_density(req.lat, req.lon)
     
+    # Отримуємо густину матеріалу з constants
+    material_density = MATERIALS[req.material]["density"]
+    
     result = {
         "energy": energy,
         "material": MATERIALS[req.material]["name"],
@@ -51,7 +54,14 @@ def calculate_impact(req: ImpactRequest):
     
     # Розрахунки залежно від сценарію
     if req.scenario == "ground":
-        result["crater"] = calculate_crater(req.size, req.speed, req.angle, energy["energy_mt"])
+        # ВИПРАВЛЕНО: передаємо густину матеріалу замість енергії
+        result["crater"] = calculate_crater(
+            req.size,           # діаметр метеорита (м)
+            req.speed,          # швидкість (км/с)
+            req.angle,          # кут падіння (градуси)
+            material_density    # густина матеріалу (кг/м³) - 3000 для stone, 7800 для iron, 917 для ice
+        )
+        
         result["airblast"] = calculate_airblast(energy["energy_mt"])
         result["thermal"] = calculate_thermal(energy["energy_mt"])
         result["seismic"] = calculate_seismic(energy["energy_mt"])
