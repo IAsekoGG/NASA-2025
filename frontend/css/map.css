@@ -1,0 +1,65 @@
+#map {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+}
+
+/* Контроль стилів мапи */
+.map-controls {
+    position: absolute;
+    top: 20px;
+    right: 420px;
+    z-index: 10;
+    background: white;
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.map-style-btn {
+    padding: 8px 16px;
+    margin: 4px;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: #F3F4F6;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.map-style-btn.active {
+    border-color: #3B82F6;
+    background: #EFF6FF;
+    color: #3B82F6;
+}
+
+/* Легенда */
+.map-legend {
+    position: absolute;
+    bottom: 80px;
+    left: 20px;
+    background: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 10;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+}
+
+.legend-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+    margin-right: 10px;
+}
+
+.legend-label {
+    font-size: 13px;
+    color: #374151;
+}

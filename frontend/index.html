@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Asteroid Impact Simulator</title>
+    
+    <!-- MapLibre -->
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Стилі -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/map.css">
+    <link rel="stylesheet" href="css/panels.css">
+    <link rel="stylesheet" href="css/articles.css">
+</head>
+<body>
+    <!-- Мапа -->
+    <div id="map"></div>
+    
+    <!-- Панель "Врони метеорит" -->
+    <div id="impactPanel" class="panel panel-left"></div>
+    
+    <!-- Панель "Сценарії" -->
+    <div id="scenariosPanel" class="panel panel-bottom"></div>
+    
+    <!-- Панель "Наслідки" -->
+    <div id="resultsPanel" class="panel panel-right hidden"></div>
+    
+    <!-- Модальне вікно для статей -->
+    <div id="articleModal" class="modal hidden">
+        <div class="modal-content">
+            <button id="closeModal" class="modal-close">&times;</button>
+            <div id="articleContent"></div>
+        </div>
+    </div>
+    
+    <!-- JavaScript модулі -->
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>

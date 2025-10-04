@@ -1,0 +1,84 @@
+/* Стилі для статей */
+.article {
+    max-width: 700px;
+}
+
+.article h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 16px;
+}
+
+.article h2 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1F2937;
+    margin-top: 32px;
+    margin-bottom: 12px;
+}
+
+.article h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #374151;
+    margin-top: 24px;
+    margin-bottom: 8px;
+}
+
+.article p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #4B5563;
+    margin-bottom: 16px;
+}
+
+.article ul, .article ol {
+    margin-left: 24px;
+    margin-bottom: 16px;
+}
+
+.article li {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #4B5563;
+    margin-bottom: 8px;
+}
+
+.article-highlight {
+    background: #FEF3C7;
+    border-left: 4px solid #F59E0B;
+    padding: 16px;
+    margin: 24px 0;
+    border-radius: 4px;
+}
+
+.article-fact {
+    background: #DBEAFE;
+    border-left: 4px solid #3B82F6;
+    padding: 16px;
+    margin: 24px 0;
+    border-radius: 4px;
+}
+
+.article-warning {
+    background: #FEE2E2;
+    border-left: 4px solid #EF4444;
+    padding: 16px;
+    margin: 24px 0;
+    border-radius: 4px;
+}
+
+.article img {
+    width: 100%;
+    border-radius: 8px;
+    margin: 24px 0;
+}
+
+.article-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 2px solid #F3F4F6;
+    font-size: 14px;
+    color: #6B7280;
+}
