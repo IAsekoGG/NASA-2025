@@ -5,7 +5,6 @@
     width: 100%;
 }
 
-/* Контроль стилів мапи */
 .map-controls {
     position: absolute;
     top: 20px;
@@ -34,7 +33,41 @@
     color: #3B82F6;
 }
 
-/* Легенда */
+.map-layers {
+    position: absolute;
+    top: 80px;
+    right: 420px;
+    z-index: 10;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.layer-title {
+    font-weight: 600;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.layer-toggle {
+    display: flex;
+    align-items: center;
+    padding: 6px;
+    margin: 4px 0;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+.layer-toggle:hover {
+    background: #F3F4F6;
+}
+
+.layer-toggle input {
+    margin-right: 8px;
+}
+
 .map-legend {
     position: absolute;
     bottom: 80px;
@@ -44,6 +77,7 @@
     padding: 16px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     z-index: 10;
+    display: none;
 }
 
 .legend-item {
@@ -61,5 +95,4 @@
 
 .legend-label {
     font-size: 13px;
-    color: #374151;
 }

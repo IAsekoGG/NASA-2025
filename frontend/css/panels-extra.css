@@ -1,0 +1,191 @@
+/* Додаткові стилі для панелей з втратами */
+
+.result-section.alert-danger {
+    background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+    border-left: 4px solid #DC2626;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.result-section.alert-warning {
+    background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%);
+    border-left: 4px solid #F59E0B;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.result-section.alert-critical {
+    background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%);
+    border-left: 4px solid #2563EB;
+    margin-bottom: 16px;
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.location-info {
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+}
+
+.stat-card.danger {
+    background: linear-gradient(135deg, #FCA5A5 0%, #F87171 100%);
+    color: white;
+}
+
+.stat-card.danger .stat-label,
+.stat-card.danger .stat-sub {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-card.warning {
+    background: linear-gradient(135deg, #FCD34D 0%, #FBBF24 100%);
+    color: #78350F;
+}
+
+.stat-card.info {
+    background: linear-gradient(135deg, #93C5FD 0%, #60A5FA 100%);
+    color: white;
+}
+
+.stat-card.info .stat-label,
+.stat-card.info .stat-sub {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.risk-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 8px;
+    background: white;
+    border-left: 4px solid #DC2626;
+}
+
+.risk-item.critical {
+    border-left-color: #DC2626;
+    background: #FEF2F2;
+}
+
+.risk-item.high {
+    border-left-color: #F59E0B;
+    background: #FFFBEB;
+}
+
+.risk-icon {
+    font-size: 24px;
+    margin-right: 12px;
+}
+
+.risk-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.zones-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.zone-item {
+    display: flex;
+    padding: 12px;
+    background: white;
+    border-radius: 8px;
+    align-items: center;
+}
+
+.zone-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    margin-right: 12px;
+}
+
+.zone-info {
+    flex: 1;
+}
+
+.zone-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.zone-stats {
+    font-size: 12px;
+    color: #6B7280;
+    margin-bottom: 4px;
+}
+
+.zone-effects {
+    font-size: 12px;
+    color: #9CA3AF;
+}
+
+.fun-fact {
+    margin-top: 20px;
+    padding: 16px;
+    background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%);
+    border-radius: 8px;
+    border-left: 4px solid #6366F1;
+    font-size: 14px;
+    color: #312E81;
+}
+
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #9CA3AF;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+}
+
+.btn-close:hover {
+    background: #F3F4F6;
+    color: #374151;
+}
+
+.thermal-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.thermal-zone {
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #374151;
+}
+
+.tsunami-zones {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.tsunami-zone {
+    padding: 10px;
+    background: white;
+    border-radius: 6px;
+    font-size: 13px;
+    color: #374151;
+    border-left: 3px solid #0077BE;
+}
