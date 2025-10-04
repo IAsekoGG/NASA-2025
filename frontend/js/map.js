@@ -111,35 +111,86 @@ export function drawImpactEffects(layers) {
     const map = window.APP_STATE.map;
     const coords = window.APP_STATE.selectedCoords;
     
-    // Видалити старі шари
-    ['crater', 'airburst', 'thermal', 'seismic', 'tsunami'].forEach(id => {
-        if (map.getLayer(id)) map.removeLayer(id);
-        if (map.getSource(id)) map.removeSource(id);
-    });
+    // Видалити всі старі шари impact_*
+    removeAllImpactLayers(map);
     
-    // Намалювати нові
-    layers.forEach(layer => {
+    // Намалювати нові шари (від найбільшого до найменшого)
+    const sortedLayers = [...layers].sort((a, b) => b.radius_km - a.radius_km);
+    
+    sortedLayers.forEach((layer, index) => {
         const circle = createCircle(coords, layer.radius_km);
+        const layerId = `impact_${layer.type}_${index}`;
         
-        map.addSource(layer.type, {
+        map.addSource(layerId, {
             type: 'geojson',
             data: circle
         });
         
         map.addLayer({
-            id: layer.type,
+            id: layerId,
             type: 'fill',
-            source: layer.type,
+            source: layerId,
             paint: {
                 'fill-color': layer.color,
-                'fill-opacity': 0.3,
+                'fill-opacity': 0.25,
                 'fill-outline-color': layer.color
+            }
+        });
+        
+        // Додати outline для кращої видимості
+        map.addLayer({
+            id: layerId + '_outline',
+            type: 'line',
+            source: layerId,
+            paint: {
+                'line-color': layer.color,
+                'line-width': 2,
+                'line-opacity': 0.6
             }
         });
     });
     
     // Показати легенду
     document.getElementById('mapLegend').classList.remove('hidden');
+}
+
+// Видалення всіх шарів імпакту
+function removeAllImpactLayers(map) {
+    const style = map.getStyle();
+    if (!style || !style.layers) return;
+    
+    // Збираємо всі ID шарів які треба видалити
+    const layersToRemove = [];
+    const sourcesToRemove = [];
+    
+    style.layers.forEach(layer => {
+        if (layer.id.startsWith('impact_')) {
+            layersToRemove.push(layer.id);
+        }
+    });
+    
+    // Збираємо джерела
+    if (style.sources) {
+        Object.keys(style.sources).forEach(sourceId => {
+            if (sourceId.startsWith('impact_')) {
+                sourcesToRemove.push(sourceId);
+            }
+        });
+    }
+    
+    // Видаляємо шари
+    layersToRemove.forEach(layerId => {
+        if (map.getLayer(layerId)) {
+            map.removeLayer(layerId);
+        }
+    });
+    
+    // Видаляємо джерела
+    sourcesToRemove.forEach(sourceId => {
+        if (map.getSource(sourceId)) {
+            map.removeSource(sourceId);
+        }
+    });
 }
 
 function createCircle(center, radiusKm, points = 64) {

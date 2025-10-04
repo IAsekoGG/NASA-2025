@@ -110,7 +110,8 @@ async function handleImpact() {
         size: parseFloat(document.getElementById('size').value),
         speed: parseFloat(document.getElementById('speed').value),
         angle: parseFloat(document.getElementById('angle').value),
-        material: document.getElementById('material').value
+        material: document.getElementById('material').value,
+        scenario: window.APP_STATE.currentScenario || 'ground'  // Додано!
     };
     
     try {

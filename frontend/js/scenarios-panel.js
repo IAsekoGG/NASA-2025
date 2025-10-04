@@ -11,7 +11,7 @@ export function initScenariosPanel() {
         
         <div class="panel-body">
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                <div class="card" onclick="selectScenario('water')">
+                <div class="card" data-scenario="water" onclick="selectScenario('water')">
                     <div class="card-title">
                         🌊 У воду
                         <button class="btn-info" onclick="event.stopPropagation(); openArticle('water-impact')">ℹ️</button>
@@ -19,7 +19,7 @@ export function initScenariosPanel() {
                     <div class="card-description">Цунамі, парові викиди</div>
                 </div>
                 
-                <div class="card selected" onclick="selectScenario('ground')">
+                <div class="card selected" data-scenario="ground" onclick="selectScenario('ground')">
                     <div class="card-title">
                         🏔️ На землю
                         <button class="btn-info" onclick="event.stopPropagation(); openArticle('ground-impact')">ℹ️</button>
@@ -27,7 +27,7 @@ export function initScenariosPanel() {
                     <div class="card-description">Кратер, ударна хвиля</div>
                 </div>
                 
-                <div class="card" onclick="selectScenario('airburst')">
+                <div class="card" data-scenario="airburst" onclick="selectScenario('airburst')">
                     <div class="card-title">
                         💥 Вибух в атмосфері
                         <button class="btn-info" onclick="event.stopPropagation(); openArticle('airburst')">ℹ️</button>
@@ -35,7 +35,7 @@ export function initScenariosPanel() {
                     <div class="card-description">Без кратера, велика хвиля</div>
                 </div>
                 
-                <div class="card" onclick="selectScenario('fragmentation')">
+                <div class="card" data-scenario="fragmentation" onclick="selectScenario('fragmentation')">
                     <div class="card-title">🧩 Розкол</div>
                     <div class="card-description">Кілька малих ударів</div>
                 </div>
@@ -45,16 +45,28 @@ export function initScenariosPanel() {
             <div id="scenarioParams" class="mt-4"></div>
         </div>
     `;
+    
+    // Ініціалізувати початковий сценарій
+    setTimeout(() => showScenarioParams('ground'), 100);
 }
 
 window.selectScenario = function(scenario) {
-    // Зняти виділення
-    document.querySelectorAll('#scenariosPanel .card').forEach(c => c.classList.remove('selected'));
+    // Знайти картку по data-scenario
+    const cards = document.querySelectorAll('#scenariosPanel .card');
     
-    // Виділити вибраний
-    event.currentTarget.classList.add('selected');
+    // Зняти виділення з усіх
+    cards.forEach(c => c.classList.remove('selected'));
     
+    // Виділити вибрану
+    const selectedCard = document.querySelector(`#scenariosPanel .card[data-scenario="${scenario}"]`);
+    if (selectedCard) {
+        selectedCard.classList.add('selected');
+    }
+    
+    // Оновити глобальний стан
     window.APP_STATE.currentScenario = scenario;
+    
+    console.log('🎭 Обрано сценарій:', scenario);
     
     // Показати додаткові параметри
     showScenarioParams(scenario);
@@ -123,8 +135,5 @@ function showScenarioParams(scenario) {
         };
     });
 }
-
-// Ініціалізувати з базовим сценарієм
-setTimeout(() => showScenarioParams('ground'), 100);
 
 window.openArticle = openArticle;
