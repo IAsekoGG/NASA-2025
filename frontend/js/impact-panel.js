@@ -131,7 +131,7 @@ export function initImpactPanel() {
             </button>
           </label>
           <div class="range-row">
-            <input type="range" id="angle" min="0" max="90" step="1" value="45" class="input-range">
+            <input type="range" id="angle" min="1" max="90" step="1" value="45" class="input-range">
             <span id="angleValue" class="input-value">45°</span>
           </div>
           <div class="visual-scale" id="angleScale"></div>
@@ -289,15 +289,27 @@ function setupEventListeners() {
   });
 
   document.getElementById('size').oninput = e => {
-    document.getElementById('sizeValue').textContent = e.target.value + ' m';
+    const val = parseFloat(e.target.value);
+    document.getElementById('sizeValue').textContent = val + ' m';
+    updateVisualScale('size', val);
+    updateEduHints();
   };
+  // Замінити на:
   document.getElementById('speed').oninput = e => {
-    document.getElementById('speedValue').textContent = e.target.value + ' km/s';
+    const val = parseFloat(e.target.value);
+    document.getElementById('speedValue').textContent = val + ' km/s';
+    updateVisualScale('speed', val);
+    updateEduHints();
   };
   document.getElementById('angle').oninput = e => {
-    document.getElementById('angleValue').textContent = e.target.value + '°';
+    const val = parseFloat(e.target.value);
+    document.getElementById('angleValue').textContent = val + '°';
+    updateVisualScale('angle', val);
+    updateEduHints();
   };
-
+  document.getElementById('material').onchange = () => {
+    updateEduHints();
+  };
   // Виклик користувацького удару (без збереження історії)
   document.getElementById('impactBtn').addEventListener('click', handleImpact);
 
@@ -359,7 +371,7 @@ function updateVisualScale(type, value) {
   if (existing) existing.remove();
 
   let pos = 0;
-  if (type === 'size')   pos = (value / 10000) * 100;
+  if (type === 'size')   pos = (value / 1500) * 100;
   if (type === 'speed')  pos = ((value - 5) / (72 - 5)) * 100;
   if (type === 'angle')  pos = (value / 90) * 100;
 
