@@ -1,0 +1,23 @@
+/* Visual scales */
+.visual-scale { position: relative; display: flex; height: 14px; border-radius: 6px; overflow: hidden; margin: 8px 0 6px; background: #F3F4F6; }
+.scale-segment { position: relative; display: flex; align-items: center; justify-content: center; font-size: 12px; }
+.scale-label { position: absolute; top: -18px; }
+.scale-marker {
+  position: absolute; top: -4px; transform: translateX(-50%);
+  width: 0; height: 0; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 8px solid #111827;
+}
+
+/* Educational chips */
+.edu-chips { margin-top: 6px; }
+.chips-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid; border-radius: 999px; padding: 4px 8px; font-size: 12px; line-height: 1; }
+.chip-icon { font-size: 14px; }
+
+/* Material pill */
+.material-card { margin-top: 8px; }
+.material-pill { border: 1px solid; border-radius: 12px; padding: 8px; }
+.material-header { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.material-icon { font-size: 18px; }
+.pill-title { font-weight: 700; }
+.pill-sub { font-size: 12px; }
+.pill-note { margin-top: 4px; font-size: 13px; }

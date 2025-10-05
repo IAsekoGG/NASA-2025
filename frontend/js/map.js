@@ -160,20 +160,8 @@ function addInfrastructureLayer(map) {
 function addMapControls(map) {
     const controlsHTML = `
         <div class="map-controls">
-            <button class="map-style-btn active" data-style="osm">🗺️ Карта</button>
-            <button class="map-style-btn" data-style="satellite">🛰️ Супутник</button>
-        </div>
-        
-        <div class="map-layers">
-            <div class="layer-title">📊 Дані</div>
-            <label class="layer-toggle">
-                <input type="checkbox" data-layer="population">
-                <span>👥 Густина населення</span>
-            </label>
-            <label class="layer-toggle">
-                <input type="checkbox" data-layer="infrastructure">
-                <span>🏙️ Міста + Інфраструктура</span>
-            </label>
+            <button class="map-style-btn active" data-style="osm">Map</button>
+            <button class="map-style-btn" data-style="satellite">Satellite</button>
         </div>
     `;
     
@@ -287,61 +275,6 @@ function handleMapClick(e) {
     }
 }
 
-
-
-function cssVar(name, fallback) {
-  const v = getComputedStyle(document.documentElement).getPropertyValue(name);
-  return (v && v.trim().length) ? v.trim() : fallback;
-}
-
-function colorForType(type) {
-  // crater
-  if (type === 'crater') {
-    return {
-      fill: cssVar('--color-crater-fill', '#000000'),
-      line: cssVar('--color-crater-stroke', '#000000'),
-      fop:  parseFloat(cssVar('--fill-opacity-crater', '0.5')) || 0.5,
-      lw:   parseFloat(cssVar('--stroke-width-crater', '3')) || 3
-    };
-  }
-  // tsunami_*
-  if (typeof type === 'string' && type.startsWith('tsunami_')) {
-    const map = {
-      'tsunami_extreme':    '--color-tsunami-extreme',
-      'tsunami_major':      '--color-tsunami-major',
-      'tsunami_moderate':   '--color-tsunami-moderate',
-      'tsunami_minor':      '--color-tsunami-minor',
-      'tsunami_information':'--color-tsunami-info',
-    };
-    const varName = map[type] || '--color-tsunami-info';
-    return {
-      fill: cssVar(varName, '#0077BE'),
-      line: cssVar(varName, '#0077BE'),
-      fop:  parseFloat(cssVar('--fill-opacity-zones', '0.25')) || 0.25,
-      lw:   parseFloat(cssVar('--stroke-width-zones', '2')) || 2
-    };
-  }
-  // airblast
-  const airMap = {
-    total_destruction: '--color-blast-total',
-    heavy_damage:      '--color-blast-heavy',
-    moderate_damage:   '--color-blast-moderate',
-    light_damage:      '--color-blast-light',
-    glass_breakage:    '--color-blast-glass',
-  };
-  const varName = airMap[type] || '--color-blast-light';
-  return {
-    fill: cssVar(varName, '#FFA500'),
-    line: cssVar(varName, '#FFA500'),
-    fop:  parseFloat(cssVar('--fill-opacity-zones', '0.25')) || 0.25,
-    lw:   parseFloat(cssVar('--stroke-width-zones', '2')) || 2
-  };
-}
-
-
-
-
-
 export function drawImpactEffects(layers) {
     const map = window.APP_STATE.map;
     const coords = window.APP_STATE.selectedCoords;
@@ -355,27 +288,17 @@ export function drawImpactEffects(layers) {
     const crater = layers.find(l => l.type === 'crater');
     if (crater) orderedLayers.push(crater);
     
-    // Додаємо цунамі-зони (усі, що починаються з "tsunami_")
-    const tsunami = layers
-    .filter(l => typeof l.type === 'string' && l.type.startsWith('tsunami_'))
-    .sort((a, b) => b.radius_km - a.radius_km);
-
-    // Потім руйнування від найсильніших до слабких (як було)
+    // Потім руйнування від найсильніших до слабких
     const damages = layers.filter(l => 
-    l.type === 'total_destruction' ||
-    l.type === 'heavy_damage' ||
-    l.type === 'moderate_damage' ||
-    l.type === 'light_damage' ||       // додав, якщо хочете ще одну зону
-    l.type === 'glass_breakage'        // і цю теж можна малювати
+        l.type === 'total_destruction' || 
+        l.type === 'heavy_damage' || 
+        l.type === 'moderate_damage'
     ).sort((a, b) => b.radius_km - a.radius_km);
-
-    // Порядок: спочатку tsunami (великі), потім airblast (менші). Кратер — окремо зверху.
-    orderedLayers.push(...tsunami);
+    
     orderedLayers.push(...damages);
-
+    
     // Малюємо від найбільшого до найменшого
     orderedLayers.reverse().forEach((layer, index) => {
-
         const circle = createCircle(coords, layer.radius_km);
         const layerId = `impact_${layer.type}_${index}`;
         
@@ -387,31 +310,30 @@ export function drawImpactEffects(layers) {
         // Для кратера - чорний/сірий
         const fillColor = layer.type === 'crater' ? '#000000' : layer.color;
         const fillOpacity = layer.type === 'crater' ? 0.5 : 0.25;
-
+        
         map.addLayer({
-        id: layerId,
-        type: 'fill',
-        source: layerId,
-        paint: {
-            'fill-color': fillColor,
-            'fill-opacity': fillOpacity
-        }
+            id: layerId,
+            type: 'fill',
+            source: layerId,
+            paint: {
+                'fill-color': fillColor,
+                'fill-opacity': fillOpacity
+            }
         });
-
+        
         map.addLayer({
-        id: layerId + '_outline',
-        type: 'line',
-        source: layerId,
-        paint: {
-            'line-color': fillColor,
-            'line-width': layer.type === 'crater' ? 3 : 2,
-            'line-opacity': 0.8
-        }
+            id: layerId + '_outline',
+            type: 'line',
+            source: layerId,
+            paint: {
+                'line-color': fillColor,
+                'line-width': layer.type === 'crater' ? 3 : 2,
+                'line-opacity': 0.8
+            }
         });
-
     });
     
-    document.getElementById('mapLegend').style.display = 'block';
+    //document.getElementById('mapLegend').style.display = 'block';
 }
 
 function removeAllImpactLayers(map) {

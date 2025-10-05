@@ -8,146 +8,139 @@ export function showResults(data) {
   
   let html = `
     <div class="panel-header">
-      <div class="panel-title">📊 Наслідки удару</div>
-      <button class="btn-close" onclick="document.getElementById('resultsPanel').classList.add('hidden')">✕</button>
+      <div class="panel-title">
+        Consequences of the impact <button class="btn-close" id="closeResultsPanel">&times;</button>
+      </div>
     </div>
-    
     <div class="panel-body">
-      <div class="result-section">
-        <h3>⚡ Енергія</h3>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-label">Енергія удару</div>
-            <div class="stat-value">${formatNumber(data.energy.energy_mt)} МТ</div>
-            <div class="stat-sub">≈ ${formatNumber(data.energy.hiroshima_eq)} бомб на Хіросіму</div>
-          </div>
-        </div>
-      </div>
-
-      ${data.crater ? `
-      <div class="result-section">
-        <h3>🕳️ Кратер</h3>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-label">Діаметр</div>
-            <div class="stat-value">${data.crater.diameter_km} км</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Глибина</div>
-            <div class="stat-value">${data.crater.depth_km} км</div>
-          </div>
-        </div>
-      </div>
-      ` : ''}
-
-      ${data.airblast ? `
-      <div class="result-section">
-        <h3>💥 Ударна хвиля</h3>
-        <div class="zones-list">
-          ${data.airblast.slice(0, 3).map(zone => `
-            <div class="zone-item">
-              <div class="zone-color" style="background: ${zone.color}"></div>
-              <div class="zone-info">
-                <div class="zone-name">${translateZone(zone.type)}</div>
-                <div class="zone-stats">${zone.radius_km} км • ${zone.pressure_kpa} кПа</div>
-                <div class="zone-effects">${zone.effects}</div>
-              </div>
+      <div class="results-grid">
+        <!-- ЕНЕРГІЯ -->
+        <div class="result-card">
+          <h3 class="card-title">Energy</h3>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Impact energy</div>
+              <div class="stat-value">${formatNumber(data.energy.energy_mt)} MT</div>
+              <div class="stat-sub">≈ ${formatNumber(data.energy.hiroshima_eq)} bombs on Hiroshima</div>
             </div>
-          `).join('')}
+          </div>
         </div>
-      </div>
-      ` : ''}
 
-      ${data.thermal ? `
-      <div class="result-section">
-        <h3>🔥 Теплове випромінювання</h3>
-        <div class="thermal-info">
-          ${data.thermal.slice(0, 2).map(zone => `
-            <div class="thermal-zone">
-              <strong>${zone.effects}</strong> - ${zone.radius_km} км (${zone.temperature_c}°C)
+        <!-- КРАТЕР (умовно) -->
+        ${data.crater ? `
+        <div class="result-card">
+          <h3 class="card-title">Crater</h3>
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Diameter</div>
+              <div class="stat-value">${data.crater.diameter_km} km</div>
             </div>
-          `).join('')}
-        </div>
-      </div>
-      ` : ''}
-
-      ${!isWaterScenario && data.casualties ? `
-      <div class="result-section alert-danger">
-        <h3>💀 Людські втрати</h3>
-        <div class="location-info">
-          📍 ${data.location.nearest_city} (${data.location.area_type}), 
-          👥 ${formatNumber(data.location.density)} люд/км²
-        </div>
-        <div class="stat-grid">
-          <div class="stat-card danger">
-            <div class="stat-label">Загиблі</div>
-            <div class="stat-value">${formatNumber(data.casualties.total_deaths)}</div>
-          </div>
-          <div class="stat-card warning">
-            <div class="stat-label">Поранені</div>
-            <div class="stat-value">${formatNumber(data.casualties.total_injuries)}</div>
-          </div>
-          <div class="stat-card info">
-            <div class="stat-label">Постраждало</div>
-            <div class="stat-value">${formatNumber(data.casualties.affected_population)}</div>
-          </div>
-        </div>
-      </div>
-      ` : ''}
-
-      ${!isWaterScenario && data.economic_damage ? `
-      <div class="result-section alert-warning">
-        <h3>💰 Економічні збитки</h3>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-label">Загальні збитки</div>
-            <div class="stat-value">${formatMoney(data.economic_damage.total_damage_usd)}</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Уражена площа</div>
-            <div class="stat-value">${formatNumber(data.economic_damage.affected_area_km2)} км²</div>
-          </div>
-        </div>
-      </div>
-      ` : ''}
-
-      ${data.tsunami ? `
-      <div class="result-section">
-        <h3>🌊 Цунамі</h3>
-        <div class="stat-grid">
-          <div class="stat-card">
-            <div class="stat-label">Початкова висота</div>
-            <div class="stat-value">${data.tsunami.initial_height_m} м</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Швидкість хвилі</div>
-            <div class="stat-value">${data.tsunami.wave_speed_kmh} км/год</div>
-          </div>
-        </div>
-        <div class="tsunami-zones">
-          ${data.tsunami.zones.slice(0, 3).map(z => `
-            <div class="tsunami-zone">
-              <strong>${z.distance_km} км:</strong> висота ${z.wave_height_m} м, 
-              прибуття через ${z.arrival_time_min} хв
+            <div class="stat-card">
+              <div class="stat-label">Depth</div>
+              <div class="stat-value">${data.crater.depth_km} km</div>
             </div>
-          `).join('')}
-        </div>
-      </div>
-      ` : ''}
-
-      ${data.strategic_risks && data.strategic_risks.length > 0 ? `
-      <div class="result-section alert-critical">
-        <h3>⚠️ Стратегічні ризики</h3>
-        ${data.strategic_risks.map(risk => `
-          <div class="risk-item ${risk.severity}">
-            <div class="risk-icon">${getRiskIcon(risk.type)}</div>
-            <div class="risk-text">${risk.description}</div>
           </div>
-        `).join('')}
+        </div>
+        ` : ''}
       </div>
-      ` : ''}
+    </div>
 
-      <div class="fun-fact">💡 ${data.fun_fact}</div>
+      <div class="results-stack">
+
+        ${!isWaterScenario && data.casualties ? `
+        <!-- 1) Людські втрати -->
+        <div class="result-row casualties">
+          <h3 class="row-title">Human losses</h3>
+          <div class="location-info">
+            ${data.location.nearest_city} (${data.location.area_type}),
+            ${formatNumber(data.location.density)} people/km²
+          </div>
+          <div class="row-body">
+            <div class="pill pill-dead"><b>Dead:</b> ${formatNumber(data.casualties.total_deaths)}</div>
+            <div class="pill pill-hurt"><b>Hurt:</b> ${formatNumber(data.casualties.total_injuries)}</div>
+            <div class="pill pill-affected"><b>Affected:</b> ${formatNumber(data.casualties.affected_population)}</div>
+          </div>
+        </div>
+        ` : ''}
+
+        ${!isWaterScenario && data.economic_damage ? `
+        <!-- 2) Економічні збитки -->
+        <div class="result-row economic">
+          <h3 class="row-title">Economic losses</h3>
+          <div class="row-body">
+            <div class="pill pill-losses"><b>Total losses:</b> ${formatMoney(data.economic_damage.total_damage_usd)}</div>
+            <div class="pill pill-area"><b>Affected area:</b> ${formatNumber(data.economic_damage.affected_area_km2)} km²</div>
+          </div>
+        </div>
+        ` : ''}
+
+        <!-- 3) Повне знищення (червоний) -->
+        <div class="badge-rect rect-red">
+          <div class="rect-title">Complete destruction</div>
+          <div class="rect-sub">
+            radius:
+            ${
+              (data.destruction && data.destruction.total_km) ??
+              (data.airblast && data.airblast[0]?.radius_km) ?? '—'
+            } km
+          </div>
+        </div>
+
+        <!-- 4) Важкі руйнування (рожевий) -->
+        <div class="badge-rect rect-pink">
+          <div class="rect-title">Severe destruction</div>
+          <div class="rect-sub">
+            радіус:
+            ${
+              (data.destruction && data.destruction.heavy_km) ??
+              (data.airblast && data.airblast[1]?.radius_km) ?? '—'
+            } km
+          </div>
+        </div>
+
+        <!-- 5) Середні руйнування (жовтий) -->
+        <div class="badge-rect rect-yellow">
+          <div class="rect-title">Average destruction</div>
+          <div class="rect-sub">
+            radius:
+            ${
+              (data.destruction && data.destruction.moderate_km) ??
+              (data.airblast && data.airblast[2]?.radius_km) ?? '—'
+            } km
+          </div>
+        </div>
+
+        <!-- 6) Опіки 3 ступеня (жовтий + чорний бордер) -->
+        <div class="badge-rect rect-burn rect-burn-yellow">
+          <div class="rect-title">3rd degree burns</div>
+          <div class="rect-sub">
+            radius:
+            ${
+              (data.thermal && (data.thermal.third_deg_km ?? data.thermal[0]?.radius_km)) ?? '—'
+            } км
+          </div>
+        </div>
+
+        <!-- 7) Опіки 2 ступеня (жовтий + чорний бордер) -->
+        <div class="badge-rect rect-burn rect-burn-yellow">
+          <div class="rect-title">2nd degree burns</div>
+          <div class="rect-sub">
+            radius:
+            ${
+              (data.thermal && (data.thermal.second_deg_km ?? data.thermal[1]?.radius_km)) ?? '—'
+            } км
+          </div>
+        </div>
+
+        <!-- 8) Факт (блакитний) -->
+        <div class="badge-rect rect-fact">
+          <div class="rect-title"><img src="img/star_fall.svg" alt="свинка" class="svynka-icon">Fact</div>
+          <div class="rect-sub">
+            ${data.fun_fact || 'Наприклад: енергія зростає приблизно квадратично зі швидкістю (E ∝ v²).'}
+          </div>
+        </div>
+
+      </div>
     </div>
   `;
 
@@ -162,28 +155,20 @@ function formatNumber(num) {
 }
 
 function formatMoney(usd) {
-  if (usd >= 1e12) return '$' + (usd / 1e12).toFixed(1) + ' трлн';
-  if (usd >= 1e9) return '$' + (usd / 1e9).toFixed(1) + ' млрд';
-  if (usd >= 1e6) return '$' + (usd / 1e6).toFixed(1) + ' млн';
+  if (usd >= 1e12) return '$' + (usd / 1e12).toFixed(1) + ' trillion';
+  if (usd >= 1e9) return '$' + (usd / 1e9).toFixed(1) + ' billion';
+  if (usd >= 1e6) return '$' + (usd / 1e6).toFixed(1) + ' million';
   return '$' + (usd / 1e3).toFixed(0) + 'K';
 }
 
 function translateZone(type) {
   const types = {
-    'total_destruction': 'Повне знищення',
-    'heavy_damage': 'Важкі руйнування',
-    'moderate_damage': 'Середні руйнування',
-    'light_damage': 'Легкі руйнування',
-    'glass_breakage': 'Вибиті вікна'
+    'total_destruction': 'Total destruction',
+    'heavy_damage': 'Heavy_damage',
+    'moderate_damage': 'Moderate_damage',
+    'light_damage': 'Light damage',
+    'glass_breakage': 'Glass breakage'
   };
   return types[type] || type;
 }
 
-function getRiskIcon(type) {
-  const icons = {
-    'nuclear': '☢️',
-    'major_city': '🏙️',
-    'industrial': '🏭'
-  };
-  return icons[type] || '⚠️';
-}

@@ -1,7 +1,7 @@
 /* Заголовки панелей */
 .panel-header {
     padding: 20px;
-    border-bottom: 2px solid #F3F4F6;
+    border-bottom: 2px solid #FFFFFF4D;
 }
 
 .panel-title {
@@ -14,7 +14,10 @@
 }
 
 .panel-body {
-    padding: 20px;
+    padding: 10px 20px;
+    background-color: #FFFFFF4D;     /* білий із прозорістю ~77% */
+    backdrop-filter: blur(3px);      /* блюр фону */
+    -webkit-backdrop-filter: blur(3px); /* підтримка Safari */
 }
 
 /* Поля вводу */
@@ -36,7 +39,7 @@
     width: 100%;
     height: 6px;
     border-radius: 3px;
-    background: #E5E7EB;
+    background: #FFFFFF4D;
     outline: none;
 }
 
@@ -58,7 +61,7 @@
 /* Вкладки */
 .tabs {
     display: flex;
-    border-bottom: 2px solid #F3F4F6;
+    border-bottom: 2px solid #FFFFFF4D;
     margin-bottom: 16px;
 }
 
@@ -68,18 +71,20 @@
     text-align: center;
     cursor: pointer;
     font-weight: 600;
-    color: #6B7280;
+    color: #3B68FF;
     border-bottom: 3px solid transparent;
     transition: all 0.2s;
 }
 
 .tab:hover {
-    background: #F9FAFB;
+    background: #FFFFFF4D;
 }
 
 .tab.active {
-    color: #3B82F6;
-    border-bottom-color: #3B82F6;
+  background-color: #3B82F6; /* насичений блакитний прямокутник */
+  color: #ffffff;            /* білий текст */
+  border: none;              /* прибирає нижню межу, якщо була */
+   border-radius: 8px;
 }
 
 .tab-content {
@@ -92,33 +97,287 @@
 
 /* Картки */
 .card {
-    background: #F9FAFB;
-    border-radius: 8px;
+    background: #F2E3FF;
+    border-radius: 24px;
     padding: 16px;
     margin-bottom: 12px;
-    border: 2px solid transparent;
+    border: 2px solid #000000;
     cursor: pointer;
     transition: all 0.2s;
 }
 
 .card:hover {
     border-color: #3B82F6;
-    background: #EFF6FF;
+    background: #F2E3FF;
 }
 
 .card.selected {
     border-color: #3B82F6;
-    background: #EFF6FF;
+    background: #F2E3FF;
 }
 
 .card-title {
     font-weight: 600;
-    color: #111827;
+    color: #000000;
     margin-bottom: 4px;
 }
 
 .card-description {
     font-size: 13px;
-    color: #6B7280;
+    color: #F2E3FF;
+}
+
+/* Блок Material */
+
+
+/* Заголовок і текст усередині */
+.material-pill,
+.pill-title,
+.pill-sub,
+.pill-note {
+  color: #000000;
+}
+
+/* Спадний список чорного кольору */
+.material-select,
+select#w-material,
+#material {
+  background-color: #000000;   /* чорний фон */
+  color: #FFFFFF;              /* білий текст */
+  border: 2px solid #3B3B3B;   /* темно-сірий бордер */
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-weight: 500;
+}
+
+/* При наведенні */
+#material:hover {
+  background-color: #111111;
+}
+
+/* ===== Повзунок з двома кольорами: рожевий + блакитний ===== */
+input[type="range"].input-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+
+  /* двокольоровий градієнт (динамічно оновлюється через --value) */
+  background: linear-gradient(
+    to right,
+    #3B68FF 0%,
+    #3B68FF var(--value, 50%),
+    #FFD6E7 var(--value, 50%),
+    #FFD6E7 100%
+  );
+
+  /* блакитна рамка */
+  border: 2px solid #3B68FF;
+  box-sizing: border-box;
+}
+
+/* Бігунок (thumb) Chrome / Safari / Edge */
+input[type="range"].input-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #3B68FF;  /* блакитний бігунок */
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+input[type="range"].input-range::-webkit-slider-thumb:hover {
+  background: #567CFF;
+  transform: scale(1.1);
+}
+
+/* Firefox */
+input[type="range"].input-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #3B68FF;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+
+input[type="range"].input-range::-moz-range-thumb:hover {
+  background: #567CFF;
+  transform: scale(1.1);
+}
+
+/* Firefox трек і заповнена частина */
+input[type="range"].input-range::-moz-range-progress {
+  background: #3B68FF;
+  height: 8px;
+  border-radius: 4px 0 0 4px;
+}
+
+input[type="range"].input-range::-moz-range-track {
+  background: #F2E3FF;
+  height: 8px;
+  border-radius: 4px;
+  border: 2px solid #3B68FF;
+}
+
+/* Сітка для двох карток поруч */
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  align-items: stretch;
+}
+
+/* Картка-квадратик */
+.result-card {
+  background: #F2E3FF;
+  border: 2px solid #000000;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* Заголовок усередині картки */
+.result-card .card-title {
+  font-weight: 700;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.results-stack { display: grid; gap: 12px; margin-top: 12px; padding: 10px 20px; } 
+
+.result-row {
+  background: #FFFFFF;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.result-row .row-title { font-weight: 700; margin-bottom: 8px; display:flex; align-items:center; gap:8px; }
+.result-row .row-body { display:flex; flex-wrap:wrap; gap:8px; }
+
+.result-row.casualties {
+  background-color: #091021;   /* чорний фон */
+  color: #FFFFFF;              /* білий текст */
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  border: 2px solid transparent;
+}
+
+/* Dead — червона */
+.pill-dead {
+  background-color: #FF5151; /* світло-червоний фон */
+  color: #ffffff;
+}
+
+/* Hurt — рожевий */
+.pill-hurt {
+  background-color: #FF8235; /* рожевий фон */
+  color: #ffffff;
+}
+
+/* Affected — жовтий */
+.pill-affected {
+  background-color: #FFAF01; /* світло-жовтий фон */
+  color: #ffffff;
+}
+
+/* === ЕКОНОМІЧНІ ЗБИТКИ (блакитний блок) === */
+.result-row.economic {
+  background-color: #3B68FF;   /* світло-блакитний фон */
+  color: #FFFFFF;              /* темно-синій текст */
+  border-radius: 16px;
+  padding: 16px 20px;
+}
+
+.result-row.economic .pill-losses,
+.result-row.economic .pill-area {
+  display: block;              /* робимо їх блоковими */
+  width: 100%;                 /* займають всю ширину */
+  box-sizing: border-box;      /* щоб padding враховувався у ширині */
+  padding: 10px 16px;          /* симетричні відступи зліва/справа */
+  margin: 4px 0;               /* відстань між пігулками */
+  font-weight: 600;
+  font-size: 14px;
+  border-radius: 12px;
+}
+
+/* Рожева пігулка — Total losses */
+.result-row.economic .pill-losses {
+  background-color: #FF6B6B;   /* жовтий фон */
+  color: #ffffff;               /* темно-рожевий текст */
+}
+
+/* Жовта пігулка — Affected area */
+.result-row.economic .pill-area {
+  background-color: #FFAF01;   /* жовтий фон */
+  color: #ffffff;              /* коричнево-жовтий текст */
+}
+
+/* Загальний стиль пігулок всередині */
+.result-row.economic .pill {
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.badge-rect { border-radius:12px; padding:12px; color:#111827; border:2px solid transparent; }
+.badge-rect .rect-title { font-weight:700; margin-bottom:4px; }
+.badge-rect .rect-sub { font-size:13px; opacity:.9; }
+
+.rect-red    { background:#860909; color:#FFFFFF; }
+.rect-pink   { background:#D90B0B; color:#FFFFFF; }
+.rect-yellow { background:#F85C5C; color:#FFFFFF; }
+
+/* Опіки: жовтий з чорним бордером */
+.rect-burn.rect-burn-yellow { background:#F2E3FF; border-color:#000000; color:#000000; }
+
+/* Блакитний факт */
+.rect-fact  { background:#3B68FF; color:#ffffff; }
+
+.scenario-params-card {
+  background: #F2E3FF;
+  border: 2px solid #000000;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.param-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.param-row label { font-weight: 600; }
+.param-row .input {
+  width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+}
+
+.hint {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #4B5563;
 }
 
