@@ -105,3 +105,53 @@
     width: auto;
     justify-self: start; /* дозволяє елементу бути вужчим за колонку */
 }
+
+/* ===== Impact Effects article specific styles ===== */
+.article.article-impact-effects h2 {
+    margin-top: 24px;
+    padding-top: 8px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.article.article-impact-effects .mm-table {
+    display: table;
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px;
+    table-layout: fixed;
+}
+.article.article-impact-effects .mm-table thead { display: table-header-group; }
+.article.article-impact-effects .mm-table tbody { display: table-row-group; }
+.article.article-impact-effects .mm-table tr { display: table-row; }
+.article.article-impact-effects .mm-table th,
+.article.article-impact-effects .mm-table td {
+    display: table-cell;
+    box-sizing: border-box;
+    border: 1px solid #d1d5db;
+    padding: 10px;
+    vertical-align: top;
+    word-break: break-word;
+}
+.article.article-impact-effects .mm-table thead th {
+    background: #f3f4f6;
+    text-align: left;
+    font-weight: 700;
+}
+.article.article-impact-effects .mm-table col.col-cat   { width: 26%; }
+.article.article-impact-effects .mm-table col.col-diam  { width: 16%; }
+.article.article-impact-effects .mm-table col.col-where { width: 26%; }
+.article.article-impact-effects .mm-table col.col-note  { width: 32%; }
+.article.article-impact-effects .mm-table tbody tr:nth-child(even) { background: #fafafa; }
+
+.article.article-impact-effects figure { margin: 12px 0; }
+.article.article-impact-effects figure img { max-width: 100%; height: auto; display: block; border-radius: 8px; }
+.article.article-impact-effects .fig-notes { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
+.article.article-impact-effects .fig-notes li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; text-align: start; text-justify: auto; }
+.article.article-impact-effects .badge {
+    flex: 0 0 auto; width: 22px; height: 22px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: 999px; background: #111827; color: #fff;
+    font-size: 0.9rem; font-weight: 700; text-transform: lowercase;
+}
+.article.article-impact-effects .nowrap { white-space: nowrap; }
+.article.article-impact-effects .source { margin-top: 10px; color: #555; font-size: 0.95rem; }
