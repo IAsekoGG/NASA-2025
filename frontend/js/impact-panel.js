@@ -56,7 +56,10 @@ export function initImpactPanel() {
         </div>
 
         <div class="input-group">
-          <label class="input-label">Швидкість (км/с)</label>
+          <label class="input-label">
+            Швидкість (км/с)
+            <button class="btn-info" onclick="openArticle('speed')">ℹ️</button>
+          </label>
           <input type="range" id="speed" min="5" max="70" value="20" class="input-range">
           <span id="speedValue" class="input-value">20 км/с</span>
         </div>
