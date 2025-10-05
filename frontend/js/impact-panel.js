@@ -65,7 +65,10 @@ export function initImpactPanel() {
         </div>
 
         <div class="input-group">
-          <label class="input-label">Кут падіння (°)</label>
+          <label class="input-label">
+          Кут падіння (°)
+          <button class="btn-info" onclick="openArticle('angle')">ℹ️</button>
+          </label>
           <input type="range" id="angle" min="10" max="90" value="45" class="input-range">
           <span id="angleValue" class="input-value">45°</span>
         </div>
