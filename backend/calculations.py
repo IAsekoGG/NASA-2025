@@ -408,11 +408,11 @@ def calculate_tsunami(
 
     # 3) Пороги офшорної висоти для кілець (м)
     thresholds = [
-        ("tsunami_extreme",    30.0,   "#6b0000", "Негайна евакуація. Високий ризик затоплення >10 м у прибережних низинах."),
-        ("tsunami_major",      15,   "#a50000", "Евакуація на висоти >20 м. Багаторазові хвилі, сильні течії."),
-        ("tsunami_moderate",   7,   "#d45500", "Уникати берегової лінії, гаваней, мостів. Підвищена обережність."),
-        ("tsunami_minor",      3,   "#f6a800", "Можливі затоплення низин, небезпечні течії в портах."),
-        ("tsunami_information",0.0,   "#ffd166", "Слабкі коливання рівня, локальні течії."),
+        ("tsunami_extreme",    30.0,   "#6b0000", "Immediate evacuation. High risk of flooding >10 m in coastal lowlands."),
+        ("tsunami_major",      15,   "#a50000", "Evacuate to heights >20 m. Multiple waves, strong currents."),
+        ("tsunami_moderate",   7,   "#d45500", "Avoid coastline, harbors, bridges. Increased caution."),
+        ("tsunami_minor",      3,   "#f6a800", "Possible flooding of lowlands, dangerous currents in ports."),
+        ("tsunami_information",0.0,   "#ffd166", "Weak sea level fluctuations, local currents."),
     ]
     # 4) Знаходження радіуса для порогу H_thr:
     #    H(r) = H0 * sqrt(r0/(r+r0)) ⇒ r = r0 * (H0/H_thr)^2 - r0
