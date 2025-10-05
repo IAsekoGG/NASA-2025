@@ -1,0 +1,37 @@
+/* Контейнерні дрібниці */
+.range-row {
+  display: flex; align-items: center; gap: 8px;
+}
+.input-value { min-width: 80px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Чипи */
+.edu-chips { margin-top: 6px; }
+.chips-row { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #F3F4F6; border: 1px solid #E5E7EB; border-radius: 999px;
+  padding: 6px 10px; font-size: 12px; line-height: 1;
+}
+.chip b { font-weight: 700; }
+.chip-label { opacity: 0.9; }
+
+/* Мікрокопі (однорядок) */
+.edu-micro { font-size: 12px; color: #4B5563; margin-top: 4px; }
+
+/* Картка матеріалу */
+.material-card { margin-top: 8px; }
+.material-pill {
+  border: 1px solid #E5E7EB; background: #FFFFFF; border-radius: 12px;
+  padding: 10px; display: grid; gap: 2px;
+}
+.pill-title { font-weight: 600; }
+.pill-sub { font-size: 12px; color: #6B7280; }
+.pill-note { font-size: 12px; color: #374151; }
+
+/* Адаптивність тулбара (компакт на мобільних) */
+@media (max-width: 640px) {
+  .panel-body { padding: 10px !important; }
+  .chip { padding: 5px 8px; font-size: 11px; }
+  .input-value { min-width: 64px; }
+}
