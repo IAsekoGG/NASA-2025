@@ -101,7 +101,7 @@ export function initImpactPanel() {
             </button>
           </label>
           <div class="range-row">
-            <input type="range" id="size" min="1" max="10000" step="1" value="100" class="input-range">
+            <input type="range" id="size" min="1" max="1500" step="1" value="100" class="input-range">
             <span id="sizeValue" class="input-value">100 m</span>
           </div>
           <div class="visual-scale" id="sizeScale"></div>
