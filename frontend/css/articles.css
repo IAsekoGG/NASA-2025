@@ -199,3 +199,74 @@
     background: #f3f4f6;
     margin-right: 6px;
 }
+
+/* ===== Ground Impact article specific styles ===== */
+.article.article-ground-impact h2 {
+    margin-top: 22px;
+    padding-top: 8px;
+    /* без сірих розділових ліній */
+}
+.article.article-ground-impact p { line-height: 1.6; }
+.article.article-ground-impact .grid {
+    display: grid;
+    gap: 14px;
+    margin-top: 10px;
+}
+@media (min-width: 780px) {
+    .article.article-ground-impact .grid { grid-template-columns: repeat(3, 1fr); }
+}
+.article.article-ground-impact .card {
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 14px;
+    background: #fafafa;
+}
+.article.article-ground-impact .card h3 {
+    margin: 0 0 6px;
+    font-size: 1.05rem;
+}
+.article.article-ground-impact .note {
+    margin-top: 14px;
+    padding: 12px 14px;
+    border-left: 4px solid #6366f1;
+    background: #f5f7ff;
+    border-radius: 8px;
+}
+.article.article-ground-impact .gallery-3 {
+    display: grid;
+    gap: 14px;
+    margin-top: 12px;
+}
+@media (min-width: 780px) {
+    .article.article-ground-impact .gallery-3 { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* 3 зображення в ряд на десктопі, стовпчиком на мобайлі */
+.article .gallery-3{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 10px;
+}
+@media (min-width: 780px){
+  .article .gallery-3{ grid-template-columns: repeat(3, 1fr); }
+}
+.article .gallery-3 figure{
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+  overflow: hidden;
+}
+.article .gallery-3 img{
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 4 / 3;     /* однакова висота плиток */
+  object-fit: cover;       /* акуратний кадр без «стиснення» */
+  display: block;
+}
+.article .gallery-3 figcaption{
+  padding: 8px 10px;
+  background: #fff;
+  font-size: .95rem;
+  color: #374151;
+}
