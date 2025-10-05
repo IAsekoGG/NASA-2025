@@ -52,6 +52,7 @@ body {
 
 /* Кнопки */
 .btn {
+    font-size: 10px;
     padding: 12px 24px;
     border-radius: 8px;
     font-weight: 600;
@@ -61,6 +62,7 @@ body {
 }
 
 .btn-primary {
+    font-family: 'DPix_8pt', sans-serif;
     display: inline-flex;            /* ставимо текст і картинку в один рядок */
     align-items: center;             /* вирівнюємо вертикально */
     justify-content: center;         /* центруємо вміст */
@@ -108,6 +110,7 @@ body {
 }
 
 .btn-secondary {
+    font-family: 'DPix_8pt', sans-serif;
     display: inline-flex;            /* ставимо текст і картинку в один рядок */
     align-items: center;             /* вирівнюємо вертикально */
     justify-content: center;         /* центруємо вміст */
