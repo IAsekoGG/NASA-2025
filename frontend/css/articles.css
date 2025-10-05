@@ -83,6 +83,31 @@
     color: #6B7280;
 }
 
+/* Візуально виділене посилання-«кнопка» для 3D прикладів */
+.article .link-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #93C5FD;      /* light blue */
+    background: #EFF6FF;            /* blue-50 */
+    color: #1D4ED8;                 /* blue-700 */
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+.article .link-cta:hover {
+    background: #DBEAFE;            /* blue-100 */
+    border-color: #60A5FA;          /* blue-400 */
+    color: #1E40AF;                 /* blue-800 */
+}
+.article .link-cta::after {
+    content: '↗';
+    font-size: 0.9em;
+    font-weight: 700;
+}
+
 /* Однакова висота зображень у ряду */
 .article .image-row.equal-heights img,
 .article .image-row.equal-heights figure > img {
@@ -146,7 +171,9 @@
 .article.article-impact-effects figure { margin: 12px 0; }
 .article.article-impact-effects figure img { max-width: 100%; height: auto; display: block; border-radius: 8px; }
 .article.article-impact-effects .fig-notes { list-style: none; padding: 0; margin: 10px 0 0; display: grid; gap: 6px; }
-.article.article-impact-effects .fig-notes li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.4; text-align: start; text-justify: auto; }
+.article.article-impact-effects .fig-notes li { display: flex; gap: 8px; align-items: flex-start; line-height: 1.55; }
+.article.article-impact-effects .fig-notes .note-text { flex: 1 1 auto; min-width: 0; }
+.article.article-impact-effects .fig-notes .note-text .nowrap { white-space: nowrap; }
 .article.article-impact-effects .badge {
     flex: 0 0 auto; width: 22px; height: 22px;
     display: inline-flex; align-items: center; justify-content: center;

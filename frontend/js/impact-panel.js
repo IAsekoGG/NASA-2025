@@ -68,7 +68,10 @@ export function initImpactPanel() {
         </div>
 
         <div class="input-group">
-          <label class="input-label">Матеріал</label>
+          <label class="input-label">
+            Матеріал
+            <button class="btn-info" onclick="openArticle('materials')">ℹ️</button>
+          </label>
           <select id="material" class="w-full p-2 border rounded">
             <option value="stone">🪨 Кам'яний</option>
             <option value="iron">⚙️ Залізний</option>
