@@ -76,7 +76,7 @@ export function initImpactPanel() {
   panel.innerHTML = `
     <div class="panel-header">
       <div class="panel-title">
-        Launch the piggy-meteor
+        Launch the piggy-meteorite
         <button class="btn-info" onclick="openArticle('asteroid-basics')"><img src="img/star.svg" alt="свинка" class="svynka-icon"></button>
       </div>
     </div>
@@ -154,7 +154,7 @@ export function initImpactPanel() {
         </div>
 
         <button id="impactBtn" class="btn btn-primary w-full" disabled>
-          LAUNCH THE PIGGY-METEOR <img src="img/pig.svg" alt="свинка" class="svynka-icon">
+          LAUNCH THE PIGGY-METEORITE<img src="img/pig.svg" alt="свинка" class="svynka-icon">
         </button>
       </div>
 
