@@ -111,7 +111,7 @@ export function initImpactPanel() {
         <div class="input-group">
           <label class="input-label">
             Speed (km/s)
-            <button class="btn-info" onclick="openArticle('impact-effects')">
+            <button class="btn-info" onclick="openArticle('speed')">
               <img src="img/star.svg" alt="info" class="svynka-icon">
             </button>
           </label>
@@ -190,7 +190,7 @@ export function initImpactPanel() {
                 <div class="card" data-scenario="fragmentation" onclick="selectScenario('fragmentation')">
                     <div class="card-title">
                       Split
-                      <button class="btn-info" onclick="event.stopPropagation(); openArticle('airburst')"><img src="img/star.svg" alt="свинка" class="svynka-icon"></button>
+                      <button class="btn-info" onclick="event.stopPropagation(); openArticle('split')"><img src="img/star.svg" alt="свинка" class="svynka-icon"></button>
                     </div>
                 </div>
             </div>
@@ -487,7 +487,10 @@ async function simulatePreset(presetId) {
     material: p.params.material,
     scenario: window.APP_STATE.currentScenario || 'ground'
   };
-
+  if (params.scenario === 'water') {
+    const depthInput = document.getElementById('sp-water-depth');
+    params.water_depth = depthInput ? parseFloat(depthInput.value) : 4000;
+  }
   try {
     const result = await callImpactAPI(params);
     window.APP_STATE.currentImpact = result;
@@ -511,7 +514,10 @@ async function handleImpact() {
     material: document.getElementById('material').value,
     scenario: window.APP_STATE.currentScenario || 'ground'
   };
-
+  if (params.scenario === 'water') {
+    const depthInput = document.getElementById('sp-water-depth');
+    params.water_depth = depthInput ? parseFloat(depthInput.value) : 4000;
+  }
   try {
     const result = await callImpactAPI(params);
     window.APP_STATE.currentImpact = result;

@@ -47,6 +47,38 @@ export function showResults(data) {
 
       <div class="results-stack">
 
+          ${isWaterScenario && data.tsunami ? `
+            <!-- ЦУНАМІ ІНФО -->
+            <div class="result-row" style="background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border-left: 4px solid #0284c7;">
+              <h3 class="row-title" style="color: #0c4a6e;">🌊 Tsunami parameters</h3>
+              <div class="row-body">
+                <div class="pill" style="background: #f0f9ff; border-color: #0284c7;">
+                  <b>Wave speed:</b> ${data.tsunami.wave_speed_kmh} km/h
+                </div>
+                <div class="pill" style="background: #f0f9ff; border-color: #0284c7;">
+                  <b>Wavelength:</b> ${data.tsunami.wavelength_km} km
+                </div>
+                <div class="pill" style="background: #f0f9ff; border-color: #0284c7;">
+                  <b>Initial height:</b> ${data.tsunami.initial_height_m} m
+                </div>
+              </div>
+            </div>
+
+            <!-- ЦУНАМІ ЗОНИ -->
+            ${data.tsunami.zones.slice(0, 4).map(zone => `
+              <div class="badge-rect" style="background: ${zone.color}20; border-left: 4px solid ${zone.color};">
+                <div class="rect-title" style="color: ${zone.color};">
+                  ${translateTsunamiZone(zone.type)}
+                </div>
+                <div class="rect-sub">
+                  Radius: ${zone.radius_km} km • Height: ${zone.wave_height_m} m • 
+                  Arrival: ${zone.arrival_time_min} min
+                </div>
+                <div class="text-xs mt-1" style="color: #4b5563;">${zone.advice}</div>
+              </div>
+            `).join('')}
+          ` : ''}
+
         ${!isWaterScenario && data.casualties ? `
         <!-- 1) Людські втрати -->
         <div class="result-row casualties">
@@ -74,6 +106,7 @@ export function showResults(data) {
         </div>
         ` : ''}
 
+        ${!isWaterScenario ? `
         <!-- 3) Повне знищення (червоний) -->
         <div class="badge-rect rect-red">
           <div class="rect-title">Complete destruction</div>
@@ -131,6 +164,7 @@ export function showResults(data) {
             } км
           </div>
         </div>
+        ` : ''}
 
         <!-- 8) Факт (блакитний) -->
         <div class="badge-rect rect-fact">
@@ -172,3 +206,13 @@ function translateZone(type) {
   return types[type] || type;
 }
 
+function translateTsunamiZone(type) {
+  const zones = {
+    'tsunami_extreme': 'Extreme danger',
+    'tsunami_major': 'Major threat',
+    'tsunami_moderate': 'Moderate threat',
+    'tsunami_minor': 'Minor threat',
+    'tsunami_information': 'Information'
+  };
+  return zones[type] || type;
+}
