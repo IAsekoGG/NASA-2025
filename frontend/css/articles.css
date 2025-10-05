@@ -241,6 +241,34 @@
     .article.article-ground-impact .gallery-3 { grid-template-columns: repeat(3, 1fr); }
 }
 
+    /* ===== Airburst article specific styles ===== */
+    .article.article-airburst h2 {
+        margin-top: 22px;
+        padding-top: 8px;
+        /* без сірих розділювачів */
+    }
+    .article.article-airburst p { line-height: 1.65; }
+    .article.article-airburst .callout {
+        margin: 14px 0;
+        padding: 12px 14px;
+        border-left: 4px solid #ef4444;
+        background: #fff7f7;
+        border-radius: 8px;
+    }
+    .article.article-airburst .fig {
+        display: grid;
+        gap: 10px;
+        margin: 14px 0;
+    }
+    @media (min-width: 780px) {
+        .article.article-airburst .fig { grid-template-columns: 1fr 1fr; align-items: center; }
+    }
+    .article.article-airburst figure { margin: 0; }
+    .article.article-airburst figure img { width: 100%; height: auto; display: block; border-radius: 10px; }
+    .article.article-airburst figure figcaption { font-size: .92rem; color: #4b5563; margin-top: 6px; }
+    .article.article-airburst .footer a { color: #2563eb; text-decoration: none; }
+    .article.article-airburst .footer a:hover { text-decoration: underline; }
+
 /* 3 зображення в ряд на десктопі, стовпчиком на мобайлі */
 .article .gallery-3{
   display: grid;
