@@ -12,7 +12,7 @@ body {
 /* Панелі */
 .panel {
     position: absolute;
-    background: white;
+    background: #FFFFFFC4;
     border-radius: 12px;
     box-shadow: 0 10px 40px rgba(0,0,0,0.2);
     z-index: 10;
@@ -24,12 +24,16 @@ body {
     top: 20px;
     left: 20px;
     width: 380px;
+    bottom: 100px;
+    scrollbar-width: none;
 }
 
 .panel-right {
     top: 20px;
     right: 20px;
     width: 380px;
+    bottom: 20px;
+    scrollbar-width: none;
 }
 
 .panel-bottom {
@@ -50,17 +54,65 @@ body {
 }
 
 .btn-primary {
-    background: #EF4444;
-    color: white;
+    display: inline-flex;            /* ставимо текст і картинку в один рядок */
+    align-items: center;             /* вирівнюємо вертикально */
+    justify-content: center;         /* центруємо вміст */
+    gap: 8px;                        /* відстань між текстом і картинкою */
+
+    background-color: #FFFFFF;       /* білий фон */
+    color: #3B68FF;                  /* синій текст */
+    border: 4px solid #3B68FF;       /* синя рамка */
+    border-radius: 16px;             /* заокруглення */
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .btn-primary:hover {
-    background: #DC2626;
+    background-color: #3B68FF;       /* синя кнопка при наведенні */
+    color: #FFFFFF;  
+}
+
+.svynka-icon {
+  width: 28px;                     /* розмір картинки */
+  height: 28px;
+  object-fit: contain;
+}
+
+/* === 1. Тільки для карток сценаріїв, щоб текст і зірка були в одному рядку === */
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* текст зліва, зірка справа */
+  gap: 8px;
+  font-weight: 600;
+}
+
+/* Тільки для зірки — вирівнюємо та фіксуємо розмір */
+.card-title img[src*="star.svg"] {
+  width: 18px;
+  height: 18px;
+  vertical-align: middle;
+}
+
+.rect-title img[src*="star_fall.svg"] {
+  display: unset;
 }
 
 .btn-secondary {
-    background: #3B82F6;
-    color: white;
+    display: inline-flex;            /* ставимо текст і картинку в один рядок */
+    align-items: center;             /* вирівнюємо вертикально */
+    justify-content: center;         /* центруємо вміст */
+    gap: 8px;                        /* відстань між текстом і картинкою */
+
+    background-color: #091021;       /* білий фон */
+    color: #FFFFFF;                  /* синій текст */
+    border-radius: 16px;             /* заокруглення */
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .btn-info {

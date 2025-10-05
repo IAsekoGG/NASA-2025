@@ -36,10 +36,7 @@ export function initScenariosPanel() {
                 </div>
                 
                 <div class="card" data-scenario="fragmentation" onclick="selectScenario('fragmentation')">
-                    <div class="card-title">
-                    🧩 Розкол
-                    <button class="btn-info" onclick="event.stopPropagation(); openArticle('fragmentation')">ℹ️</button>
-                    </div>
+                    <div class="card-title">🧩 Розкол</div>
                     <div class="card-description">Кілька малих ударів</div>
                 </div>
             </div>
@@ -137,6 +134,8 @@ function showScenarioParams(scenario) {
             }
         };
     });
+
+    showScenarioParams('ground');
 }
 
 window.openArticle = openArticle;
