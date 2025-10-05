@@ -126,7 +126,7 @@ export function initImpactPanel() {
         <div class="input-group">
           <label class="input-label">
             Angle of incidence (°)
-            <button class="btn-info" onclick="openArticle('impact-effects')">
+            <button class="btn-info" onclick="openArticle('angle')">
               <img src="img/star.svg" alt="info" class="svynka-icon">
             </button>
           </label>
@@ -141,7 +141,7 @@ export function initImpactPanel() {
         <div class="input-group">
           <label class="input-label">
             Material
-            <button class="btn-info" onclick="openArticle('impact-effects')">
+            <button class="btn-info" onclick="openArticle('materials')">
               <img src="img/star.svg" alt="info" class="svynka-icon">
             </button>
           </label>
@@ -190,7 +190,7 @@ export function initImpactPanel() {
                 <div class="card" data-scenario="fragmentation" onclick="selectScenario('fragmentation')">
                     <div class="card-title">
                       Split
-                      <button class="btn-info" onclick="event.stopPropagation(); openArticle('split')"><img src="img/star.svg" alt="свинка" class="svynka-icon"></button>
+                      <button class="btn-info" onclick="event.stopPropagation(); openArticle('fragmentation')"><img src="img/star.svg" alt="свинка" class="svynka-icon"></button>
                     </div>
                 </div>
             </div>
