@@ -2,7 +2,7 @@
 // Для продакшену змінити на свій домен
 const API_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:8000'
-    : 'https://uptight-nita-znai-018677b1.koyeb.app/';
+    : 'https://uptight-nita-znai-018677b1.koyeb.app';
 
 export async function callImpactAPI(params) {
     try {
