@@ -59,25 +59,25 @@ def estimate_population_density(lat: float, lon: float) -> Dict:
     
     # Екватор - тропіки (висока густота в Азії/Африці)
     if abs_lat < 23.5:
-        if 60 < lon < 150:  # Азія
-            return {"area_type": "suburban", "density": 400, "nearest_city": "Регіон", "distance_km": 0}
+        if 60 < lon < 150:  # Asia
+            return {"area_type": "suburban", "density": 400, "nearest_city": "Region", "distance_km": 0}
         else:
-            return {"area_type": "rural", "density": 80, "nearest_city": "Регіон", "distance_km": 0}
+            return {"area_type": "rural", "density": 80, "nearest_city": "Region", "distance_km": 0}
     
-    # Помірні широти (більше населення в Європі/Азії)
+    # Temperate latitudes (more population in Europe/Asia)
     elif 23.5 <= abs_lat < 50:
-        if -10 < lon < 50:  # Європа
-            return {"area_type": "suburban", "density": 500, "nearest_city": "Європа", "distance_km": 0}
-        elif 60 < lon < 150:  # Азія
-            return {"area_type": "suburban", "density": 600, "nearest_city": "Азія", "distance_km": 0}
-        elif -130 < lon < -60:  # Північна Америка
-            return {"area_type": "suburban", "density": 200, "nearest_city": "Америка", "distance_km": 0}
+        if -10 < lon < 50:  # Europe
+            return {"area_type": "suburban", "density": 500, "nearest_city": "Europe", "distance_km": 0}
+        elif 60 < lon < 150:  # Asia
+            return {"area_type": "suburban", "density": 600, "nearest_city": "Asia", "distance_km": 0}
+        elif -130 < lon < -60:  # North America
+            return {"area_type": "suburban", "density": 200, "nearest_city": "America", "distance_km": 0}
         else:
-            return {"area_type": "rural", "density": 50, "nearest_city": "Регіон", "distance_km": 0}
+            return {"area_type": "rural", "density": 50, "nearest_city": "Region", "distance_km": 0}
     
-    # Високі широти (мало населення)
+    # High latitudes (low population)
     else:
-        return {"area_type": "rural", "density": 5, "nearest_city": "Віддалений регіон", "distance_km": 0}
+        return {"area_type": "rural", "density": 5, "nearest_city": "Remote region", "distance_km": 0}
 
 
 def calculate_distance(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
