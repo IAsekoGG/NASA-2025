@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user/cc56ab18-2071-51c7-bfda-d8df6159ae2c/scratchpad/v6_try.py", line 1, in <module>
+    import sim_v6 as V, os
+ModuleNotFoundError: No module named 'sim_v6'

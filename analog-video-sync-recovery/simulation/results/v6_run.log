@@ -1,0 +1,13 @@
+A_clean          edges/l=1.02 VCO=15.52-15.62 err=0.10/2.81% bad=0 blue=0 ph=0.62/0.7 запуск: sync 100% / VCO 0% / RC 0% lock@3.2006
+B_dropout        edges/l=0.97 VCO=15.49-15.83 err=0.44/3.91% bad=0 blue=0 ph=10.88/32.0 запуск: sync 65% / VCO 35% / RC 0% lock@3.2006
+B_long_dropout   edges/l=0.93 VCO=15.41-15.84 err=0.77/3.91% bad=0 blue=0 ph=14.55/32.0 запуск: sync 40% / VCO 60% / RC 1% lock@3.2006
+C_snr_ramp       edges/l=1.54 VCO=15.50-15.83 err=1.11/3.91% bad=0 blue=0 ph=8.09/32.0 запуск: sync 74% / VCO 24% / RC 1% lock@3.2006
+D_cam_64p3       edges/l=1.02 VCO=15.46-15.83 err=0.26/4.35% bad=0 blue=0 ph=14.11/32.1 запуск: sync 28% / VCO 72% / RC 0% lock@225.5007
+D_cam_65p0       edges/l=1.02 VCO=15.45-15.81 err=1.27/5.38% bad=26 blue=0 ph=18.74/32.5 запуск: sync 4% / VCO 96% / RC 0% lock@None
+E_silence        edges/l=0.68 VCO=15.49-15.83 err=0.15/2.81% bad=0 blue=0 ph=10.76/31.9 запуск: sync 64% / VCO 36% / RC 0% lock@3.2006
+F_bursts         edges/l=0.97 VCO=15.50-15.83 err=0.38/3.91% bad=0 blue=0 ph=13.36/32.0 запуск: sync 44% / VCO 56% / RC 0% lock@3.2006
+H_heavy_noise    edges/l=0.86 VCO=15.45-15.83 err=0.89/3.91% bad=0 blue=0 ph=17.87/32.0 запуск: sync 6% / VCO 92% / RC 1% lock@None
+M_medium_noise   edges/l=2.08 VCO=15.52-15.83 err=2.02/3.91% bad=0 blue=0 ph=2.22/4.2 запуск: sync 84% / VCO 11% / RC 5% lock@None
+G_acquire_fast   edges/l=1.02 VCO=15.51-15.90 err=0.36/3.91% bad=0 blue=0 ph=10.11/32.0 запуск: sync 74% / VCO 26% / RC 0% lock@3.2006
+P_trap           edges/l=1.01 VCO=15.48-15.83 err=0.22/4.21% bad=0 blue=0 ph=11.81/32.1 запуск: sync 72% / VCO 28% / RC 0% lock@174.8815
+G_acquire_slow   edges/l=1.02 VCO=15.43-15.84 err=0.10/3.28% bad=0 blue=0 ph=0.62/1.5 запуск: sync 100% / VCO 0% / RC 0% lock@6.5926
