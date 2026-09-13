@@ -1,0 +1,394 @@
+<title>Sync Regenerator v3</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600&display=swap">
+<style>
+:root{
+  --bg:#F3F5F7; --paper:#FFFFFF; --ink:#16222E; --muted:#5B6976; --line:#C9D2DA;
+  --video:#2A6BB0; --rail:#B5551B; --r33:#7A4EAB; --ok:#2F7A4D; --ok-bg:#E6F3EA; --ctrl:#8A6D1F;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#10161C; --paper:#171F27; --ink:#E3E8ED; --muted:#93A1AE; --line:#2C3843;
+    --video:#6EA8E6; --rail:#E08A4A; --r33:#B58FE0; --ok:#63B283; --ok-bg:#1C3226; --ctrl:#D4B25A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#10161C; --paper:#171F27; --ink:#E3E8ED; --muted:#93A1AE; --line:#2C3843;
+  --video:#6EA8E6; --rail:#E08A4A; --r33:#B58FE0; --ok:#63B283; --ok-bg:#1C3226; --ctrl:#D4B25A;
+}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"IBM Plex Sans",system-ui,sans-serif;font-size:16px;line-height:1.5;padding-block:32px 64px;padding-inline:20px}
+.wrap{max-width:1040px;margin:0 auto;display:grid;gap:28px}
+h1,h2{font-family:"IBM Plex Sans Condensed","IBM Plex Sans",sans-serif;font-weight:600;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:2rem} h2{font-size:1.3rem;margin-top:6px}
+p{max-width:70ch;margin:0}
+.eyebrow{font-family:"IBM Plex Mono",monospace;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lead{display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:start;background:var(--paper);border-left:4px solid var(--ok);padding:16px 20px;border-radius:0 6px 6px 0}
+.lead .yes{font-family:"IBM Plex Sans Condensed",sans-serif;font-size:2.4rem;font-weight:600;color:var(--ok);line-height:1}
+.lead b{display:block;color:var(--ok);font-size:1.05rem}
+figure{margin:0;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px}
+.scroll{overflow-x:auto}
+svg{display:block;max-width:100%;height:auto;color:var(--ink)}
+svg.wide{min-width:860px}
+figcaption{font-size:.9rem;color:var(--muted);margin-top:10px}
+ol.ideas{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:10px}
+ol.ideas li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:12px 14px;font-size:.93rem}
+.num{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font-family:"IBM Plex Mono",monospace;font-weight:500;font-size:.85rem;color:#fff;background:var(--ok)}
+li b{font-weight:600}
+table{border-collapse:collapse;width:100%;background:var(--paper);font-size:.92rem;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:"IBM Plex Mono",monospace;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+td.r,th.r{text-align:right}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:6px}
+.note{font-size:.88rem;color:var(--muted)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+@media (max-width:520px){ .lead{grid-template-columns:1fr} h1{font-size:1.6rem} }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:8px">
+    <div class="eyebrow">Фінальна схема v3 · Injection-Locked Sync Regenerator · LM1881 + RP2040 + 74HC4053</div>
+    <h1>Один ключ, один повторювач, один дільник</h1>
+    <p>Аналоговий тракт складається з чотирьох деталей. Усе «розумне» — коли саме перемкнути ключ — робить мікроконтролер із кварцом за імпульсами LM1881. Немає підстроювачів, немає вимірювання рівнів, немає RC-генераторів.</p>
+  </header>
+
+  <section class="lead">
+    <div class="yes">v3</div>
+    <div>
+      <b>Рівень sync правильний за побудовою</b>
+      <p>V_BLANK і V_SYNC беруться з одного резистивного дільника з різницею рівно 300 мВ. Другий ключ прив'язує гасіння вхідного відео до V_BLANK, перший на 4.7 мкс підставляє V_SYNC. Тому вставлений імпульс завжди на 300 мВ нижче гасіння — незалежно від приймача, температури і «землі».</p>
+    </div>
+  </section>
+
+  <section style="display:grid;gap:12px">
+    <h2>П'ять рішень, на яких тримається простота</h2>
+    <ol class="ideas">
+      <li><span class="num">1</span><div><b>Один дільник — обидва рівні.</b> 3.3 V → 1.3 k → V_BLANK 2.0 V → 300 Ω → V_SYNC 1.7 V → 1.7 k → GND. Різниця задана відношенням резисторів 1 %.</div></li>
+      <li><span class="num">2</span><div><b>Послідовний SPDT, а не шунт на землю.</b> Ключ не бореться з джерелом 75 Ω: у положенні «відео» він провідник, у положенні «sync» джерело від'єднане. Burst не зачіпається.</div></li>
+      <li><span class="num">3</span><div><b>Keyed clamp від трекера.</b> MCU знає, де back porch, і на 1.2 мкс замикає другий ключ на V_BLANK. Рівень усереднюється по ~40 рядках, шум на вершині sync його не тягне.</div></li>
+      <li><span class="num">4</span><div><b>LM1881 бачить лише вхід.</b> Точка інжекції після нього. Зворотного зв'язку через власні імпульси немає.</div></li>
+      <li><span class="num">5</span><div><b>Відмовостійкість за замовчуванням.</b> Селектори ключів підтягнуті до землі, вузол N має слабку прив'язку 100 k до V_BLANK. Без прошивки пристрій — AC-зв'язаний повторювач, картинка проходить.</div></li>
+    </ol>
+  </section>
+
+  <figure>
+    <div class="eyebrow" style="margin-bottom:8px">Рис. 1 · Принципова схема v3</div>
+    <div class="scroll">
+    <svg class="wide" viewBox="0 0 1000 660" role="img" aria-label="Схема v3: вхід через термінацію 75 Ом і конденсатор 470 нФ на послідовний ключ 74HC4053, спільний вивід якого є вузлом N; другий ключ прив'язує N до V_BLANK; дільник 1.3k/300/1.7k від 3.3 В дає V_BLANK і V_SYNC; N через Дарлінгтон BC517 на вихід; LM1881 читає вхід через ФНЧ і подає CSYNC на Pico; Pico керує обома ключами." xmlns="http://www.w3.org/2000/svg">
+      <!-- ===== INPUT ===== -->
+      <circle cx="40" cy="80" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <text x="40" y="64" font-size="11" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">J1 IN</text>
+      <line x1="46" y1="80" x2="150" y2="80" stroke="var(--video)" stroke-width="2.2"/>
+      <circle cx="80" cy="80" r="3.5" fill="var(--video)"/>
+      <line x1="80" y1="80" x2="80" y2="95" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="74" y="95" width="12" height="40" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="92" y="119" font-size="10.5" fill="currentColor" font-family="IBM Plex Mono,monospace">R1 75Ω</text>
+      <line x1="80" y1="135" x2="80" y2="150" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="72" y1="150" x2="88" y2="150" stroke="currentColor" stroke-width="1.6"/><line x1="75" y1="154" x2="85" y2="154" stroke="currentColor" stroke-width="1.6"/><line x1="78" y1="158" x2="82" y2="158" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="110" cy="80" r="3.5" fill="var(--video)"/>
+      <line x1="110" y1="80" x2="110" y2="450" stroke="var(--video)" stroke-width="1.6"/>
+      <!-- C4 -->
+      <line x1="150" y1="70" x2="150" y2="90" stroke="currentColor" stroke-width="2"/>
+      <line x1="158" y1="70" x2="158" y2="90" stroke="currentColor" stroke-width="2"/>
+      <text x="154" y="62" font-size="10.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">C4 470 nF</text>
+      <line x1="158" y1="80" x2="300" y2="80" stroke="var(--video)" stroke-width="2.2"/>
+      <!-- ===== U2 74HC4053 ===== -->
+      <rect x="300" y="50" width="170" height="180" rx="2" fill="var(--paper)" stroke="currentColor" stroke-width="1.6"/>
+      <text x="385" y="128" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">U2 74HC4053</text>
+      <text x="385" y="144" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">3× SPDT · живлення 3.3 V</text>
+      <text x="385" y="200" font-size="9" text-anchor="middle" fill="currentColor" opacity=".6" font-family="IBM Plex Mono,monospace">2 Y0B: NC · 3,4,5,9 (кан. C) → GND</text>
+      <text x="306" y="83" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">12 Y0A</text>
+      <text x="464" y="83" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">14 ZA</text>
+      <text x="464" y="113" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">15 ZB</text>
+      <text x="464" y="168" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">1 Y1B</text>
+      <text x="464" y="213" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">13 Y1A</text>
+      <text x="366" y="63" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">16 VDD</text>
+      <text x="320" y="224" font-size="9" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">6</text>
+      <text x="345" y="224" font-size="9" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">7</text>
+      <text x="370" y="224" font-size="9" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">8</text>
+      <text x="420" y="224" font-size="9" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">11</text>
+      <text x="450" y="224" font-size="9" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">10</text>
+      <!-- U2 VDD -->
+      <line x1="385" y1="50" x2="385" y2="28" stroke="var(--r33)" stroke-width="1.4"/>
+      <circle cx="385" cy="28" r="3" fill="var(--r33)"/>
+      <text x="385" y="20" font-size="11" text-anchor="middle" fill="var(--r33)" font-family="IBM Plex Mono,monospace">3V3</text>
+      <line x1="385" y1="38" x2="420" y2="38" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="420" y1="30" x2="420" y2="46" stroke="currentColor" stroke-width="2"/><line x1="428" y1="30" x2="428" y2="46" stroke="currentColor" stroke-width="2"/>
+      <line x1="428" y1="38" x2="446" y2="38" stroke="currentColor" stroke-width="1.4"/><line x1="446" y1="38" x2="446" y2="46" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="438" y1="46" x2="454" y2="46" stroke="currentColor" stroke-width="1.6"/><line x1="441" y1="50" x2="451" y2="50" stroke="currentColor" stroke-width="1.6"/><line x1="444" y1="54" x2="448" y2="54" stroke="currentColor" stroke-width="1.6"/>
+      <text x="460" y="34" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">100 nF</text>
+      <!-- U2 GND pins -->
+      <line x1="320" y1="230" x2="320" y2="250" stroke="currentColor" stroke-width="1.4"/><line x1="345" y1="230" x2="345" y2="250" stroke="currentColor" stroke-width="1.4"/><line x1="370" y1="230" x2="370" y2="250" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="320" y1="250" x2="370" y2="250" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="345" y1="250" x2="345" y2="262" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="337" y1="262" x2="353" y2="262" stroke="currentColor" stroke-width="1.6"/><line x1="340" y1="266" x2="350" y2="266" stroke="currentColor" stroke-width="1.6"/><line x1="343" y1="270" x2="347" y2="270" stroke="currentColor" stroke-width="1.6"/>
+      <text x="318" y="246" font-size="9" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">/E VEE VSS</text>
+      <!-- node N -->
+      <line x1="470" y1="80" x2="705" y2="80" stroke="var(--video)" stroke-width="2.2"/>
+      <circle cx="540" cy="80" r="3.5" fill="var(--video)"/>
+      <text x="548" y="74" font-size="11" fill="var(--video)" font-family="IBM Plex Mono,monospace">N</text>
+      <line x1="470" y1="110" x2="540" y2="110" stroke="var(--video)" stroke-width="1.6"/>
+      <line x1="540" y1="80" x2="540" y2="118" stroke="var(--video)" stroke-width="1.6"/>
+      <!-- R8 -->
+      <rect x="534" y="118" width="12" height="40" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="528" y="142" font-size="10.5" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">R8 100k</text>
+      <line x1="540" y1="158" x2="540" y2="165" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="540" cy="165" r="3" fill="currentColor"/>
+      <!-- VB / VS wires -->
+      <line x1="470" y1="165" x2="600" y2="165" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="470" y1="210" x2="600" y2="210" stroke="currentColor" stroke-width="1.4"/>
+      <text x="476" y="180" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">V_BLANK 2.0 V</text>
+      <text x="476" y="225" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">V_SYNC 1.7 V</text>
+      <!-- divider -->
+      <circle cx="600" cy="120" r="3" fill="var(--r33)"/>
+      <text x="600" y="112" font-size="11" text-anchor="middle" fill="var(--r33)" font-family="IBM Plex Mono,monospace">3V3</text>
+      <line x1="600" y1="120" x2="600" y2="125" stroke="var(--r33)" stroke-width="1.4"/>
+      <rect x="594" y="125" width="12" height="30" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="588" y="144" font-size="10.5" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">R9 1.3k</text>
+      <line x1="600" y1="155" x2="600" y2="173" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="600" cy="165" r="3" fill="currentColor"/>
+      <rect x="594" y="173" width="12" height="30" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="588" y="192" font-size="10.5" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">R10 300Ω</text>
+      <line x1="600" y1="203" x2="600" y2="218" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="600" cy="210" r="3" fill="currentColor"/>
+      <rect x="594" y="218" width="12" height="30" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="588" y="237" font-size="10.5" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">R11 1.7k</text>
+      <line x1="600" y1="248" x2="600" y2="262" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="592" y1="262" x2="608" y2="262" stroke="currentColor" stroke-width="1.6"/><line x1="595" y1="266" x2="605" y2="266" stroke="currentColor" stroke-width="1.6"/><line x1="598" y1="270" x2="602" y2="270" stroke="currentColor" stroke-width="1.6"/>
+      <!-- C5 C6 -->
+      <line x1="600" y1="165" x2="628" y2="165" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="628" y1="157" x2="628" y2="173" stroke="currentColor" stroke-width="2"/><line x1="636" y1="157" x2="636" y2="173" stroke="currentColor" stroke-width="2"/>
+      <line x1="636" y1="165" x2="650" y2="165" stroke="currentColor" stroke-width="1.4"/><line x1="650" y1="165" x2="650" y2="176" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="642" y1="176" x2="658" y2="176" stroke="currentColor" stroke-width="1.6"/><line x1="645" y1="180" x2="655" y2="180" stroke="currentColor" stroke-width="1.6"/><line x1="648" y1="184" x2="652" y2="184" stroke="currentColor" stroke-width="1.6"/>
+      <text x="662" y="169" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">C5 10 µF</text>
+      <line x1="600" y1="210" x2="628" y2="210" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="628" y1="202" x2="628" y2="218" stroke="currentColor" stroke-width="2"/><line x1="636" y1="202" x2="636" y2="218" stroke="currentColor" stroke-width="2"/>
+      <line x1="636" y1="210" x2="650" y2="210" stroke="currentColor" stroke-width="1.4"/><line x1="650" y1="210" x2="650" y2="221" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="642" y1="221" x2="658" y2="221" stroke="currentColor" stroke-width="1.6"/><line x1="645" y1="225" x2="655" y2="225" stroke="currentColor" stroke-width="1.6"/><line x1="648" y1="229" x2="652" y2="229" stroke="currentColor" stroke-width="1.6"/>
+      <text x="662" y="214" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">C6 10 µF</text>
+      <!-- Q1 darlington -->
+      <circle cx="713" cy="80" r="15" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".55"/>
+      <line x1="705" y1="66" x2="705" y2="94" stroke="currentColor" stroke-width="2.2"/>
+      <line x1="705" y1="72" x2="723" y2="54" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="705" y1="88" x2="723" y2="106" stroke="currentColor" stroke-width="1.4"/>
+      <polygon points="723,106 715,104 719,99" fill="currentColor"/>
+      <text x="735" y="76" font-size="11" fill="currentColor" font-family="IBM Plex Mono,monospace">Q1 BC517</text>
+      <text x="735" y="90" font-size="10" fill="currentColor" opacity=".7" font-family="IBM Plex Mono,monospace">(Дарлінгтон)</text>
+      <line x1="723" y1="54" x2="723" y2="36" stroke="var(--rail)" stroke-width="1.4"/>
+      <circle cx="723" cy="36" r="3" fill="var(--rail)"/>
+      <text x="723" y="28" font-size="11" text-anchor="middle" fill="var(--rail)" font-family="IBM Plex Mono,monospace">+5 V</text>
+      <line x1="723" y1="106" x2="723" y2="150" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="723" cy="140" r="3" fill="currentColor"/>
+      <rect x="717" y="150" width="12" height="40" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="735" y="174" font-size="10.5" fill="currentColor" font-family="IBM Plex Mono,monospace">R12 100Ω</text>
+      <line x1="723" y1="190" x2="723" y2="204" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="715" y1="204" x2="731" y2="204" stroke="currentColor" stroke-width="1.6"/><line x1="718" y1="208" x2="728" y2="208" stroke="currentColor" stroke-width="1.6"/><line x1="721" y1="212" x2="725" y2="212" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="723" y1="140" x2="760" y2="140" stroke="var(--video)" stroke-width="2.2"/>
+      <rect x="760" y="134" width="40" height="12" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="780" y="128" font-size="10.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">R13 10Ω</text>
+      <line x1="800" y1="140" x2="846" y2="140" stroke="var(--video)" stroke-width="2.2"/>
+      <circle cx="852" cy="140" r="6" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <text x="866" y="144" font-size="11" fill="currentColor" font-family="IBM Plex Mono,monospace">J2 OUT → монітор</text>
+      <!-- ===== Pico ===== -->
+      <rect x="620" y="300" width="180" height="290" rx="2" fill="var(--paper)" stroke="currentColor" stroke-width="1.6"/>
+      <text x="710" y="328" font-size="13" font-weight="600" text-anchor="middle" fill="currentColor">Raspberry Pi Pico</text>
+      <text x="710" y="344" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">RP2040 · кварц 12 MHz · PIO</text>
+      <text x="626" y="383" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">GP5 CLAMP</text>
+      <text x="626" y="423" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">GP4 SYNC_INS</text>
+      <text x="626" y="473" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">GP2 CSYNC</text>
+      <text x="626" y="503" font-size="10" fill="currentColor" opacity=".7" font-family="IBM Plex Mono,monospace">GP3 VSYNC (опц.)</text>
+      <text x="794" y="383" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">GP6</text>
+      <text x="794" y="423" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">GP7</text>
+      <text x="794" y="473" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">3V3 OUT</text>
+      <text x="794" y="503" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">GP0/1 UART</text>
+      <text x="710" y="313" font-size="10" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">VSYS</text>
+      <text x="710" y="584" font-size="10" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">GND</text>
+      <line x1="710" y1="300" x2="710" y2="282" stroke="var(--rail)" stroke-width="1.4"/>
+      <circle cx="710" cy="282" r="3" fill="var(--rail)"/>
+      <text x="726" y="286" font-size="11" fill="var(--rail)" font-family="IBM Plex Mono,monospace">+5 V</text>
+      <line x1="710" y1="590" x2="710" y2="604" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="702" y1="604" x2="718" y2="604" stroke="currentColor" stroke-width="1.6"/><line x1="705" y1="608" x2="715" y2="608" stroke="currentColor" stroke-width="1.6"/><line x1="708" y1="612" x2="712" y2="612" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="800" y1="470" x2="830" y2="470" stroke="var(--r33)" stroke-width="1.4"/>
+      <circle cx="830" cy="470" r="3" fill="var(--r33)"/>
+      <text x="838" y="474" font-size="10" fill="var(--r33)" font-family="IBM Plex Mono,monospace">3V3 → U2, дільник</text>
+      <text x="806" y="504" font-size="10" fill="currentColor" opacity=".7" font-family="IBM Plex Mono,monospace">→ лог у ПК</text>
+      <!-- LEDs -->
+      <line x1="800" y1="380" x2="815" y2="380" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="815" y="374" width="30" height="12" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="830" y="368" font-size="9.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">1k</text>
+      <line x1="845" y1="380" x2="860" y2="380" stroke="currentColor" stroke-width="1.4"/>
+      <polygon points="860,372 860,388 874,380" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/><line x1="874" y1="372" x2="874" y2="388" stroke="currentColor" stroke-width="2"/>
+      <line x1="874" y1="380" x2="890" y2="380" stroke="currentColor" stroke-width="1.4"/><line x1="890" y1="380" x2="890" y2="390" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="882" y1="390" x2="898" y2="390" stroke="currentColor" stroke-width="1.6"/><line x1="885" y1="394" x2="895" y2="394" stroke="currentColor" stroke-width="1.6"/><line x1="888" y1="398" x2="892" y2="398" stroke="currentColor" stroke-width="1.6"/>
+      <text x="906" y="384" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">LOCK</text>
+      <line x1="800" y1="420" x2="815" y2="420" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="815" y="414" width="30" height="12" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="830" y="408" font-size="9.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">1k</text>
+      <line x1="845" y1="420" x2="860" y2="420" stroke="currentColor" stroke-width="1.4"/>
+      <polygon points="860,412 860,428 874,420" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/><line x1="874" y1="412" x2="874" y2="428" stroke="currentColor" stroke-width="2"/>
+      <line x1="874" y1="420" x2="890" y2="420" stroke="currentColor" stroke-width="1.4"/><line x1="890" y1="420" x2="890" y2="430" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="882" y1="430" x2="898" y2="430" stroke="currentColor" stroke-width="1.6"/><line x1="885" y1="434" x2="895" y2="434" stroke="currentColor" stroke-width="1.6"/><line x1="888" y1="438" x2="892" y2="438" stroke="currentColor" stroke-width="1.6"/>
+      <text x="906" y="424" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">COAST</text>
+      <!-- select lines -->
+      <line x1="420" y1="230" x2="420" y2="420" stroke="var(--ctrl)" stroke-width="1.4"/>
+      <line x1="420" y1="420" x2="620" y2="420" stroke="var(--ctrl)" stroke-width="1.4"/>
+      <text x="520" y="414" font-size="10" text-anchor="middle" fill="var(--ctrl)" font-family="IBM Plex Mono,monospace">SA · SYNC_INS</text>
+      <line x1="450" y1="230" x2="450" y2="380" stroke="var(--ctrl)" stroke-width="1.4"/>
+      <line x1="450" y1="380" x2="620" y2="380" stroke="var(--ctrl)" stroke-width="1.4"/>
+      <text x="535" y="374" font-size="10" text-anchor="middle" fill="var(--ctrl)" font-family="IBM Plex Mono,monospace">SB · CLAMP</text>
+      <!-- pulldowns -->
+      <circle cx="420" cy="290" r="3" fill="var(--ctrl)"/>
+      <line x1="420" y1="290" x2="410" y2="290" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="380" y="284" width="30" height="12" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="395" y="278" font-size="9.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">R14 10k</text>
+      <line x1="380" y1="290" x2="365" y2="290" stroke="currentColor" stroke-width="1.4"/><line x1="365" y1="290" x2="365" y2="300" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="357" y1="300" x2="373" y2="300" stroke="currentColor" stroke-width="1.6"/><line x1="360" y1="304" x2="370" y2="304" stroke="currentColor" stroke-width="1.6"/><line x1="363" y1="308" x2="367" y2="308" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="450" cy="300" r="3" fill="var(--ctrl)"/>
+      <line x1="450" y1="300" x2="465" y2="300" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="465" y="294" width="30" height="12" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="480" y="288" font-size="9.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">R15 10k</text>
+      <line x1="495" y1="300" x2="510" y2="300" stroke="currentColor" stroke-width="1.4"/><line x1="510" y1="300" x2="510" y2="312" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="502" y1="312" x2="518" y2="312" stroke="currentColor" stroke-width="1.6"/><line x1="505" y1="316" x2="515" y2="316" stroke="currentColor" stroke-width="1.6"/><line x1="508" y1="320" x2="512" y2="320" stroke="currentColor" stroke-width="1.6"/>
+      <!-- ===== LM1881 branch ===== -->
+      <line x1="110" y1="450" x2="125" y2="450" stroke="var(--video)" stroke-width="1.6"/>
+      <rect x="125" y="444" width="40" height="12" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="145" y="438" font-size="10" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">R2 620Ω</text>
+      <line x1="165" y1="450" x2="205" y2="450" stroke="currentColor" stroke-width="1.4"/>
+      <circle cx="180" cy="450" r="3" fill="currentColor"/>
+      <line x1="180" y1="450" x2="180" y2="470" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="170" y1="470" x2="190" y2="470" stroke="currentColor" stroke-width="2"/><line x1="170" y1="478" x2="190" y2="478" stroke="currentColor" stroke-width="2"/>
+      <line x1="180" y1="478" x2="180" y2="495" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="172" y1="495" x2="188" y2="495" stroke="currentColor" stroke-width="1.6"/><line x1="175" y1="499" x2="185" y2="499" stroke="currentColor" stroke-width="1.6"/><line x1="178" y1="503" x2="182" y2="503" stroke="currentColor" stroke-width="1.6"/>
+      <text x="194" y="481" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">C1 510p</text>
+      <line x1="205" y1="440" x2="205" y2="460" stroke="currentColor" stroke-width="2"/><line x1="213" y1="440" x2="213" y2="460" stroke="currentColor" stroke-width="2"/>
+      <text x="209" y="434" font-size="10" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">C2 0.1µ</text>
+      <line x1="213" y1="450" x2="250" y2="450" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="250" y="420" width="160" height="130" rx="2" fill="var(--paper)" stroke="currentColor" stroke-width="1.6"/>
+      <text x="330" y="484" font-size="14" font-weight="600" text-anchor="middle" fill="currentColor">U1 LM1881N</text>
+      <text x="330" y="500" font-size="10.5" text-anchor="middle" fill="currentColor" opacity=".7">сепаратор синхро</text>
+      <text x="330" y="534" font-size="9" text-anchor="middle" fill="currentColor" opacity=".6" font-family="IBM Plex Mono,monospace">5 BURST · 7 BP: NC</text>
+      <text x="256" y="453" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">2 IN</text>
+      <text x="404" y="473" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">1 CSOUT</text>
+      <text x="404" y="513" font-size="10" text-anchor="end" fill="currentColor" font-family="IBM Plex Mono,monospace">3 VSYNC</text>
+      <text x="316" y="433" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">8 VCC</text>
+      <text x="290" y="545" font-size="9.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">4 GND</text>
+      <text x="370" y="545" font-size="9.5" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">6 RSET</text>
+      <!-- U1 VCC -->
+      <line x1="330" y1="420" x2="330" y2="380" stroke="var(--rail)" stroke-width="1.4"/>
+      <circle cx="330" cy="380" r="3" fill="var(--rail)"/>
+      <text x="330" y="372" font-size="11" text-anchor="middle" fill="var(--rail)" font-family="IBM Plex Mono,monospace">+5 V</text>
+      <line x1="330" y1="392" x2="365" y2="392" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="365" y1="384" x2="365" y2="400" stroke="currentColor" stroke-width="2"/><line x1="373" y1="384" x2="373" y2="400" stroke="currentColor" stroke-width="2"/>
+      <line x1="373" y1="392" x2="390" y2="392" stroke="currentColor" stroke-width="1.4"/><line x1="390" y1="392" x2="390" y2="400" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="382" y1="400" x2="398" y2="400" stroke="currentColor" stroke-width="1.6"/><line x1="385" y1="404" x2="395" y2="404" stroke="currentColor" stroke-width="1.6"/><line x1="388" y1="408" x2="392" y2="408" stroke="currentColor" stroke-width="1.6"/>
+      <text x="352" y="380" font-size="9.5" fill="currentColor" font-family="IBM Plex Mono,monospace">C3 100 nF</text>
+      <!-- U1 GND, RSET -->
+      <line x1="290" y1="550" x2="290" y2="566" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="282" y1="566" x2="298" y2="566" stroke="currentColor" stroke-width="1.6"/><line x1="285" y1="570" x2="295" y2="570" stroke="currentColor" stroke-width="1.6"/><line x1="288" y1="574" x2="292" y2="574" stroke="currentColor" stroke-width="1.6"/>
+      <line x1="370" y1="550" x2="370" y2="560" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="364" y="560" width="12" height="40" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="382" y="584" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">R3 680k</text>
+      <line x1="370" y1="600" x2="370" y2="614" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="362" y1="614" x2="378" y2="614" stroke="currentColor" stroke-width="1.6"/><line x1="365" y1="618" x2="375" y2="618" stroke="currentColor" stroke-width="1.6"/><line x1="368" y1="622" x2="372" y2="622" stroke="currentColor" stroke-width="1.6"/>
+      <!-- CSOUT divider -->
+      <line x1="410" y1="470" x2="425" y2="470" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="425" y="464" width="40" height="12" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="445" y="458" font-size="10" text-anchor="middle" fill="currentColor" font-family="IBM Plex Mono,monospace">R4 6.8k</text>
+      <line x1="465" y1="470" x2="620" y2="470" stroke="var(--ctrl)" stroke-width="1.4"/>
+      <circle cx="560" cy="470" r="3" fill="var(--ctrl)"/>
+      <line x1="560" y1="470" x2="560" y2="485" stroke="currentColor" stroke-width="1.4"/>
+      <rect x="554" y="485" width="12" height="40" fill="var(--paper)" stroke="currentColor" stroke-width="1.4"/>
+      <text x="572" y="509" font-size="10" fill="currentColor" font-family="IBM Plex Mono,monospace">R5 10k</text>
+      <line x1="560" y1="525" x2="560" y2="540" stroke="currentColor" stroke-width="1.4"/>
+      <line x1="552" y1="540" x2="568" y2="540" stroke="currentColor" stroke-width="1.6"/><line x1="555" y1="544" x2="565" y2="544" stroke="currentColor" stroke-width="1.6"/><line x1="558" y1="548" x2="562" y2="548" stroke="currentColor" stroke-width="1.6"/>
+      <text x="520" y="464" font-size="10" text-anchor="middle" fill="var(--ctrl)" font-family="IBM Plex Mono,monospace">CSYNC ≈3 V</text>
+      <line x1="410" y1="510" x2="440" y2="510" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 3"/>
+      <text x="446" y="513" font-size="9.5" fill="currentColor" opacity=".7" font-family="IBM Plex Mono,monospace">→ GP3 (опц.)</text>
+      <!-- notes -->
+      <text x="20" y="640" font-size="10.5" fill="currentColor" opacity=".8" font-family="IBM Plex Mono,monospace">S1 (DPDT, BYPASS, не показано): J1 → J2 напряму та від'єднати R1. Живлення: 5 V → Pico VSYS, LM1881, Q1; 3.3 V з Pico → U2 і дільник.</text>
+      <!-- idea markers -->
+      <g font-family="IBM Plex Mono,monospace" font-size="12" font-weight="500">
+        <circle cx="600" cy="292" r="11" fill="var(--ok)"/><text x="600" y="296" text-anchor="middle" fill="#fff">1</text>
+        <circle cx="500" cy="58" r="11" fill="var(--ok)"/><text x="500" y="62" text-anchor="middle" fill="#fff">2</text>
+        <circle cx="505" cy="194" r="11" fill="var(--ok)"/><text x="505" y="198" text-anchor="middle" fill="#fff">3</text>
+        <circle cx="88" cy="430" r="11" fill="var(--ok)"/><text x="88" y="434" text-anchor="middle" fill="#fff">4</text>
+        <circle cx="395" cy="322" r="11" fill="var(--ok)"/><text x="395" y="326" text-anchor="middle" fill="#fff">5</text>
+      </g>
+    </svg>
+    </div>
+    <figcaption>Рис. 1. Синє — відеотракт, охра — керування від Pico, фіолетове — 3.3 V, оранжеве — 5 V. Зелені номери відповідають п'яти рішенням вище. Канал C мікросхеми U2 не використовується.</figcaption>
+  </figure>
+
+  <figure>
+    <div class="eyebrow" style="margin-bottom:8px">Рис. 2 · Строби в одному рядку (PAL і NTSC однакові)</div>
+    <div class="scroll">
+    <svg class="wide" viewBox="0 0 900 250" role="img" aria-label="Три доріжки: вихідне відео з чистим sync 4.7 мкс і недоторканим burst; строб SYNC_INS від −0.2 до 4.7 мкс; строб CLAMP від 8.2 до 9.4 мкс між кінцем burst і початком активного відео." xmlns="http://www.w3.org/2000/svg">
+      <g font-family="IBM Plex Mono,monospace" font-size="10.5" fill="currentColor">
+        <line x1="80" y1="220" x2="860" y2="220" stroke="currentColor" stroke-width="1"/>
+        <line x1="80" y1="216" x2="80" y2="224" stroke="currentColor"/><text x="80" y="238" text-anchor="middle">0</text>
+        <line x1="309" y1="216" x2="309" y2="224" stroke="currentColor"/><text x="309" y="238" text-anchor="middle">4.7</text>
+        <line x1="353" y1="216" x2="353" y2="224" stroke="currentColor"/><text x="353" y="238" text-anchor="middle">5.6</text>
+        <line x1="463" y1="216" x2="463" y2="224" stroke="currentColor"/><text x="463" y="238" text-anchor="middle">7.85</text>
+        <line x1="480" y1="216" x2="480" y2="224" stroke="currentColor"/>
+        <line x1="538" y1="216" x2="538" y2="224" stroke="currentColor"/><text x="509" y="238" text-anchor="middle">8.2–9.4</text>
+        <line x1="587" y1="216" x2="587" y2="224" stroke="currentColor"/><text x="587" y="238" text-anchor="middle">10.4</text>
+        <line x1="860" y1="216" x2="860" y2="224" stroke="currentColor"/><text x="860" y="238" text-anchor="middle">16 мкс</text>
+      </g>
+      <line x1="80" y1="20" x2="80" y2="220" stroke="currentColor" stroke-width=".6" opacity=".35" stroke-dasharray="3 3"/>
+      <line x1="309" y1="20" x2="309" y2="220" stroke="currentColor" stroke-width=".6" opacity=".35" stroke-dasharray="3 3"/>
+      <rect x="480" y="20" width="58" height="200" fill="var(--ok)" opacity=".10"/>
+      <rect x="70" y="20" width="239" height="200" fill="var(--video)" opacity=".07"/>
+      <text x="6" y="52" font-size="10" fill="currentColor" font-family="IBM Plex Sans,sans-serif">вихід N</text>
+      <polyline points="40,46 70,46 70,76 309,76 309,46 353,46 358,40 363,52 368,40 373,52 378,40 383,52 388,40 393,52 398,40 403,52 408,40 413,52 418,40 423,52 428,40 433,52 438,40 443,52 448,40 453,52 458,46 587,46 600,34 630,40 660,30 700,38 740,28 780,36 820,30 860,34" fill="none" stroke="var(--video)" stroke-width="2"/>
+      <text x="120" y="92" font-size="10" fill="var(--video)" font-family="IBM Plex Mono,monospace">V_SYNC = V_BLANK − 300 мВ</text>
+      <text x="360" y="66" font-size="10" fill="var(--video)" font-family="IBM Plex Mono,monospace">burst з входу, не чіпаємо</text>
+      <text x="6" y="126" font-size="10" fill="currentColor" font-family="IBM Plex Sans,sans-serif">SYNC_INS</text>
+      <polyline points="40,134 70,134 70,112 309,112 309,134 860,134" fill="none" stroke="var(--ctrl)" stroke-width="2"/>
+      <text x="316" y="128" font-size="10" fill="var(--ctrl)" font-family="IBM Plex Mono,monospace">−0.2 … +4.7 мкс: ключ A на V_SYNC</text>
+      <text x="6" y="182" font-size="10" fill="currentColor" font-family="IBM Plex Sans,sans-serif">CLAMP</text>
+      <polyline points="40,190 480,190 480,168 538,168 538,190 860,190" fill="none" stroke="var(--ctrl)" stroke-width="2"/>
+      <text x="546" y="180" font-size="10" fill="var(--ctrl)" font-family="IBM Plex Mono,monospace">8.2 … 9.4 мкс: ключ B на V_BLANK (після burst, до відео)</text>
+    </svg>
+    </div>
+    <figcaption>Рис. 2. У кадровому інтервалі SYNC_INS формує equalizing (2.35 мкс, крок 32 мкс) і broad (27.3 мкс) імпульси за тією самою таблицею; CLAMP у ці рядки не видається. У станах LOCKED і COAST sync замінюється в кожному рядку, у SEARCH ключ A лишається на відео.</figcaption>
+  </figure>
+
+  <div class="two">
+    <section style="display:grid;gap:10px">
+      <h2>BOM і ціна</h2>
+      <div class="tbl"><table>
+        <tr><th>Поз.</th><th>Деталь</th><th class="r">≈ $</th></tr>
+        <tr><td>U1</td><td>LM1881 (клон)</td><td class="r">0.40</td></tr>
+        <tr><td>U2</td><td>74HC4053</td><td class="r">0.15</td></tr>
+        <tr><td>Q1</td><td>BC517 або 2× BC547</td><td class="r">0.05</td></tr>
+        <tr><td>MCU</td><td>Pico-клон RP2040</td><td class="r">2.50</td></tr>
+        <tr><td>R, C</td><td>15 резисторів, 8 конденсаторів</td><td class="r">0.40</td></tr>
+        <tr><td>J1, J2, S1</td><td>2× RCA, DPDT</td><td class="r">0.70</td></tr>
+        <tr><td>PCB</td><td>JLC, 5 шт.</td><td class="r">1.00</td></tr>
+        <tr><td><b>Разом</b></td><td>прототип</td><td class="r"><b>5.20</b></td></tr>
+        <tr><td></td><td>серія: CH32V003 + кварц замість Pico</td><td class="r">≈2.50</td></tr>
+      </table></div>
+    </section>
+    <section style="display:grid;gap:10px">
+      <h2>Рівні та запаси</h2>
+      <div class="tbl"><table>
+        <tr><th>Вузол</th><th>Значення</th></tr>
+        <tr><td>N</td><td>1.7 (sync) · 2.0 (гасіння) · 2.7 V (білий); межа U2 0…3.3 V</td></tr>
+        <tr><td>Емітер Q1</td><td>0.4…1.4 V, спокій 4–14 mA, пік 20 mA у 75 Ω</td></tr>
+        <tr><td>На моніторі</td><td>≈0.88 × входу (R13 / 75 Ω)</td></tr>
+        <tr><td>Смуга ключа</td><td>R_on ≈100 Ω × 15 pF ≈ 1.5 ns</td></tr>
+        <tr><td>Clamp</td><td>2.5 % похибки за рядок → усталення ≈40 рядків</td></tr>
+        <tr><td>Витік у режимі sync</td><td>ізоляція каналу ≈ −60 dB</td></tr>
+      </table></div>
+    </section>
+  </div>
+
+  <section style="display:grid;gap:10px">
+    <h2>Три тести перед платою</h2>
+    <div class="tbl"><table>
+      <tr><th>#</th><th>Тест</th><th>Критерій</th></tr>
+      <tr><td>1</td><td>Тракт без MCU (селектори на землі), A/B через bypass</td><td>Картинка через пристрій = напряму; перевіряє аналог і відмовостійкість</td></tr>
+      <tr><td>2</td><td>Генератор у free-run, на вході шум від VRX без VTX</td><td>T.SK107A.03 показує стабільний «сніг» ≥ 1 хв без синього екрана (гіпотеза H1)</td></tr>
+      <tr><td>3</td><td>Атенюатор 40→60 dB кроками 2 dB; VTX вимкнути на 5 с</td><td>Сніг замість синього; повернення до LOCKED ≤ 20 ms; лог replaced_ratio на кожному кроці</td></tr>
+    </table></div>
+    <p class="note">Свідомо не зроблено: підсилення 2× із зворотною термінацією (додається одним THS7314 для довгого кабелю), регенерація burst, оцифровка. Жодне з них не змінює цю плату, лише доповнює.</p>
+  </section>
+</div>
