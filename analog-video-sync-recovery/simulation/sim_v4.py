@@ -214,6 +214,7 @@ def scenario(name, dur=0.30, line_period=H, snr_profile=None, dropout=None, sile
     ax[3].legend(loc="upper right"); ax[3].set_ylabel("вхід"); ax[3].set_xlabel("час, мс")
     fig.tight_layout(); os.makedirs("results", exist_ok=True)
     fig.savefig(f"results/{name}.png", dpi=110); plt.close(fig)
+    np.savez(f"results/{name}.npz", vco_edges=vco_edges, err=err, ph=ph, f_log=f_log, dtl=dtl, sigma=sigma[::100], amp=amp[::100], t=t[::100], starts=starts, line_period=line_period)
     return m
 
 SCEN = {
