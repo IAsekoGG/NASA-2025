@@ -1,0 +1,9 @@
+{
+  "attachmentFolderPath": "attachments",
+  "newLinkFormat": "shortest",
+  "useMarkdownLinks": false,
+  "showFrontmatter": true,
+  "strictLineBreaks": false,
+  "readableLineLength": true,
+  "spellcheck": false
+}
